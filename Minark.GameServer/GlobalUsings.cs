@@ -1,0 +1,11 @@
+global using System.ComponentModel.DataAnnotations;
+global using System.ComponentModel.DataAnnotations.Schema;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Hosting;
+global using Microsoft.Extensions.Logging;
+global using Minark.Game.Shared.DTOs;
+global using Minark.Game.Shared.Packets;
+global using Minark.Game.Shared.Packets.Auth;
+global using Minark.Game.Shared.Packets.Friends;
+global using Minark.Game.Shared.Packets.Game;

@@ -1,0 +1,178 @@
+<Application
+    x:Class="Minark.Client.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!--
+                    Palette de couleurs thémable. Chargée en première position
+                    pour que ses clés (Surface*, Text*, Border1, …) priment.
+                    ThemeService remplace ce dictionnaire au runtime quand
+                    l'utilisateur bascule entre Dark et Light.
+                -->
+                <ResourceDictionary Source="/Minark.Client;component/Themes/Colors.Dark.xaml" />
+
+                <!--
+                    iNKORE — son ApplicationTheme est resynchronisé par
+                    ThemeService.SetTheme à chaque bascule.
+                -->
+                <ui:ThemeResources RequestedTheme="Dark" />
+                <ui:XamlControlsResources />
+
+                <!--  Ressources non-thémables : converters, accent, status.  -->
+                <ResourceDictionary Source="/Minark.Client;component/Themes/Colors.xaml" />
+
+                <!--  Styles applicatifs (consomment les DynamicResource ci-dessus).  -->
+                <ResourceDictionary Source="/Minark.Client;component/Themes/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!--  ── NavigationView pane backgrounds suivent la palette de surface ──  -->
+            <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground" Color="{DynamicResource C_Surface0}" />
+            <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="{DynamicResource C_Surface0}" />
+            <SolidColorBrush x:Key="NavigationViewTopPaneBackground" Color="{DynamicResource C_Surface0}" />
+
+            <!--  Override iNKORE accent — colors are dynamic, AccentService rewrites them at runtime  -->
+            <Color x:Key="SystemAccentColor">#7C3AED</Color>
+            <Color x:Key="SystemAccentColorLight1">#9D5FF5</Color>
+            <Color x:Key="SystemAccentColorLight2">#B87EF7</Color>
+            <Color x:Key="SystemAccentColorLight3">#D4AEFB</Color>
+            <Color x:Key="SystemAccentColorDark1">#6030C0</Color>
+            <Color x:Key="SystemAccentColorDark2">#4A2490</Color>
+            <Color x:Key="SystemAccentColorDark3">#341860</Color>
+
+            <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="{DynamicResource C_Accent1}" />
+            <SolidColorBrush x:Key="AccentFillColorSecondaryBrush" Color="{DynamicResource C_AccentLight}" />
+            <SolidColorBrush x:Key="AccentFillColorTertiaryBrush" Color="{DynamicResource SystemAccentColorLight2}" />
+            <SolidColorBrush x:Key="AccentFillColorDisabledBrush" Color="{DynamicResource SystemAccentColorDark2}" />
+            <SolidColorBrush x:Key="AccentTextFillColorPrimaryBrush" Color="{DynamicResource SystemAccentColorLight2}" />
+            <SolidColorBrush x:Key="AccentTextFillColorSecondaryBrush" Color="{DynamicResource C_AccentLight}" />
+            <SolidColorBrush x:Key="AccentTextFillColorTertiaryBrush" Color="{DynamicResource C_Accent1}" />
+            <SolidColorBrush x:Key="AccentTextFillColorDisabledBrush" Color="{DynamicResource SystemAccentColorDark2}" />
+
+            <!--  ─ TextBox / PasswordBox / iNKORE controls focus accent ─  -->
+            <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="{DynamicResource C_Accent1}" />
+            <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="{DynamicResource C_AccentLight}" />
+            <SolidColorBrush x:Key="TextControlSelectionHighlightColor" Color="{DynamicResource C_Accent1}" />
+            <SolidColorBrush x:Key="TextControlButtonForegroundPressed" Color="{DynamicResource C_Accent1}" />
+            <SolidColorBrush x:Key="TextControlButtonBackgroundPressed" Color="{DynamicResource C_Accent1}" />
+            <SolidColorBrush x:Key="TextControlPlaceholderForegroundFocused" Color="{DynamicResource C_Text3}" />
+
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillChecked" Color="{DynamicResource C_Accent1}" />
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" Color="{DynamicResource C_AccentLight}" />
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPressed" Color="{DynamicResource C_AccentDark}" />
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeChecked" Color="{DynamicResource C_Accent1}" />
+
+            <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="{DynamicResource C_Accent1}" />
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="{DynamicResource C_AccentLight}" />
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPressed" Color="{DynamicResource C_AccentDark}" />
+            <SolidColorBrush x:Key="ToggleSwitchStrokeOn" Color="{DynamicResource C_Accent1}" />
+            <SolidColorBrush x:Key="ToggleSwitchStrokeOnPointerOver" Color="{DynamicResource C_AccentLight}" />
+            <SolidColorBrush x:Key="ToggleSwitchStrokeOnPressed" Color="{DynamicResource C_AccentDark}" />
+
+            <SolidColorBrush x:Key="SliderTrackValueFill" Color="{DynamicResource C_Accent1}" />
+            <SolidColorBrush x:Key="SliderTrackValueFillPointerOver" Color="{DynamicResource C_AccentLight}" />
+            <SolidColorBrush x:Key="SliderTrackValueFillPressed" Color="{DynamicResource C_AccentDark}" />
+            <SolidColorBrush x:Key="SliderThumbBackground" Color="{DynamicResource C_Accent1}" />
+            <SolidColorBrush x:Key="SliderThumbBackgroundPointerOver" Color="{DynamicResource C_AccentLight}" />
+            <SolidColorBrush x:Key="SliderThumbBackgroundPressed" Color="{DynamicResource C_AccentDark}" />
+
+            <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{DynamicResource C_Accent1_1A}" />
+            <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="{DynamicResource C_Accent1_66}" />
+
+            <SolidColorBrush x:Key="HyperlinkButtonForeground" Color="{DynamicResource C_Accent1}" />
+            <SolidColorBrush x:Key="HyperlinkButtonForegroundPointerOver" Color="{DynamicResource C_AccentLight}" />
+            <SolidColorBrush x:Key="HyperlinkButtonForegroundPressed" Color="{DynamicResource C_AccentDark}" />
+
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFill" Color="{DynamicResource C_Accent1}" />
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedStroke" Color="{DynamicResource C_Accent1}" />
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillPointerOver" Color="{DynamicResource C_AccentLight}" />
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedStrokePointerOver" Color="{DynamicResource C_AccentLight}" />
+
+            <SolidColorBrush x:Key="ProgressBarForeground" Color="{DynamicResource C_Accent1}" />
+            <SolidColorBrush x:Key="ProgressRingForeground" Color="{DynamicResource C_Accent1}" />
+
+            <SolidColorBrush x:Key="ComboBoxBorderBrushFocused" Color="{DynamicResource C_Accent1}" />
+            <SolidColorBrush x:Key="ComboBoxItemBackgroundSelected" Color="{DynamicResource C_Accent1_26}" />
+            <SolidColorBrush x:Key="ComboBoxItemBackgroundSelectedPointerOver" Color="{DynamicResource C_Accent1_33}" />
+
+            <SolidColorBrush x:Key="ListViewItemBackgroundSelected" Color="{DynamicResource C_Accent1_26}" />
+            <SolidColorBrush x:Key="ListViewItemBackgroundSelectedPointerOver" Color="{DynamicResource C_Accent1_33}" />
+
+            <SolidColorBrush x:Key="TabViewItemHeaderBackgroundSelected" Color="{DynamicResource C_Accent1_1A}" />
+            <SolidColorBrush x:Key="TabViewItemHeaderForegroundSelected" Color="{DynamicResource C_Accent1}" />
+
+            <!--  TextBox/PasswordBox caret color  -->
+            <SolidColorBrush x:Key="TextControlForegroundFocused" Color="{DynamicResource C_Text1}" />
+            <SolidColorBrush x:Key="TextControlSelectionHighlightColorBrush" Color="{DynamicResource C_Accent1}" />
+
+            <!--  ── ContextMenu styling (suit Surface2/Border1 → s'adapte au thème) ──  -->
+            <Style TargetType="ContextMenu">
+                <Setter Property="Background" Value="{DynamicResource Surface2}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource Border1}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Padding" Value="4" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ContextMenu">
+                            <Border
+                                Padding="4"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="0">
+                                <Border.Effect>
+                                    <DropShadowEffect
+                                        BlurRadius="20"
+                                        Opacity="0.4"
+                                        ShadowDepth="0"
+                                        Color="{DynamicResource C_ToastShadow}" />
+                                </Border.Effect>
+                                <ItemsPresenter />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style TargetType="MenuItem">
+                <Setter Property="Foreground" Value="{DynamicResource Text1}" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Padding" Value="12,8" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="MenuItem">
+                            <Border
+                                x:Name="bg"
+                                Margin="2,1"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="Icon" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <ContentPresenter
+                                        Grid.Column="0"
+                                        Margin="8,0,10,0"
+                                        VerticalAlignment="Center"
+                                        ContentSource="Icon" />
+                                    <ContentPresenter
+                                        Grid.Column="1"
+                                        Margin="{TemplateBinding Padding}"
+                                        ContentSource="Header"
+                                        RecognizesAccessKey="True" />
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsHighlighted" Value="True">
+                                    <Setter TargetName="bg" Property="Background" Value="{DynamicResource AccentGlow}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

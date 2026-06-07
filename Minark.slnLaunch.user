@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Nouveau profil",
+    "Projects": [
+      {
+        "Path": "Minark.Server\\Minark.Server.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Minark.Client\\Minark.Client.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

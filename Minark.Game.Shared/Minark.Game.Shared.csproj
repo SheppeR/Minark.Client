@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Minark.Game.Shared</RootNamespace>
+    <LangVersion>12</LangVersion>
+    <Deterministic>true</Deterministic>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LiteNetLib" Version="2.1.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <UnityPluginsDir>H:\GameDev\Minark\Assets\Plugins</UnityPluginsDir>
+    <LiteNetLibDir>$(NuGetPackageRoot)litenetlib\2.1.4\lib\netstandard2.1</LiteNetLibDir>
+  </PropertyGroup>
+
+  <Target Name="CopyToUnityPlugins" AfterTargets="Build">
+    <Message Text="Copie des DLLs vers Unity Plugins..." Importance="high" />
+    <Copy SourceFiles="$(OutputPath)Minark.Game.Shared.dll" DestinationFolder="$(UnityPluginsDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(LiteNetLibDir)\LiteNetLib.dll" DestinationFolder="$(UnityPluginsDir)" SkipUnchangedFiles="true" />
+    <Message Text="✓ DLLs copiées vers $(UnityPluginsDir)" Importance="high" />
+  </Target>
+
+</Project>

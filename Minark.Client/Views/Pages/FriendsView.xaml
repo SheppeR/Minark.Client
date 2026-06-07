@@ -1,0 +1,476 @@
+<UserControl
+    x:Class="Minark.Client.Views.Pages.FriendsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern">
+
+    <Grid>
+        <Grid.Background>
+            <SolidColorBrush Color="{DynamicResource C_Surface0}" />
+        </Grid.Background>
+
+        <ScrollViewer Padding="0,0,16,0" VerticalScrollBarVisibility="Auto">
+            <Grid Margin="32,28">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!--  ══ HEADER ════════════════════════════════════════════════════  -->
+                <StackPanel Grid.Row="0" Margin="0,0,0,20">
+                    <TextBlock
+                        Margin="0,0,0,6"
+                        FontSize="22"
+                        FontWeight="Bold"
+                        Foreground="{DynamicResource Text1}"
+                        Text="Amis" />
+                    <TextBlock
+                        Margin="0,0,0,24"
+                        FontSize="12"
+                        Foreground="{DynamicResource Text3}">
+                        <Run Text="{Binding FriendsList.Count, Mode=OneWay}" />
+                        <Run Text=" ami(s)" />
+                    </TextBlock>
+                    <ui:InfoBar
+                        Title="{Binding NotificationMessage, Mode=OneWay}"
+                        Margin="0,12,0,0"
+                        IsClosable="True"
+                        IsOpen="{Binding HasNotification, Mode=OneWay}">
+                        <ui:InfoBar.Style>
+                            <Style TargetType="ui:InfoBar">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsNotificationSuccess}" Value="True">
+                                        <Setter Property="Severity" Value="Success" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsNotificationSuccess}" Value="False">
+                                        <Setter Property="Severity" Value="Warning" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ui:InfoBar.Style>
+                    </ui:InfoBar>
+                </StackPanel>
+
+                <!--  ══ INVITATIONS EN ATTENTE ═══════════════════════════════════  -->
+                <Border
+                    Grid.Row="1"
+                    Margin="0,0,0,16"
+                    Padding="0"
+                    Style="{StaticResource Card}"
+                    Visibility="{Binding HasInvites, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <Border
+                            Padding="18,12"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="0,0,0,1">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:FontIcon
+                                    Margin="0,0,10,0"
+                                    FontSize="13"
+                                    Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                                    Glyph="&#xE8FA;" />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="11"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Text="INVITATIONS EN ATTENTE" />
+                            </StackPanel>
+                        </Border>
+                        <ItemsControl Margin="10,6,10,10" ItemsSource="{Binding PendingInvites}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border
+                                        Margin="0,2"
+                                        Padding="12,10"
+                                        Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="0">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <ui:PersonPicture
+                                                Grid.Column="0"
+                                                Width="36"
+                                                Height="36"
+                                                Margin="0,0,12,0"
+                                                Initials="{Binding FromUsername[0]}" />
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock
+                                                    FontSize="13"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                    Text="{Binding FromUsername}" />
+                                                <TextBlock
+                                                    FontSize="11"
+                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                    Text="vous invite à être ami" />
+                                            </StackPanel>
+                                            <Button
+                                                Grid.Column="2"
+                                                Margin="0,0,6,0"
+                                                Padding="10,4"
+                                                Command="{Binding DataContext.AcceptInviteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Content="Accepter"
+                                                FontSize="11"
+                                                Style="{StaticResource AccentButtonStyle}" />
+                                            <Button
+                                                Grid.Column="3"
+                                                Padding="10,4"
+                                                Command="{Binding DataContext.DeclineInviteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Content="Refuser"
+                                                FontSize="11"
+                                                Style="{StaticResource DangerButton}" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!--  ══ AJOUTER UN AMI ════════════════════════════════════════════  -->
+                <Border
+                    Grid.Row="2"
+                    Margin="0,0,0,20"
+                    Padding="18,14"
+                    Style="{StaticResource Card}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock
+                                Margin="0,0,0,6"
+                                FontSize="11"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Text="AJOUTER UN AMI" />
+                            <TextBox
+                                Width="300"
+                                HorizontalAlignment="Left"
+                                ui:ControlHelper.PlaceholderText="Nom d'utilisateur…"
+                                Text="{Binding SearchUsername, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel
+                            Grid.Column="1"
+                            VerticalAlignment="Bottom"
+                            Orientation="Horizontal">
+                            <Button
+                                Command="{Binding AddFriendCommand}"
+                                Content="Ajouter"
+                                Style="{StaticResource AccentButtonStyle}" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!--  ══ LISTE D'AMIS ══════════════════════════════════════════════  -->
+                <Border
+                    Grid.Row="3"
+                    Padding="0"
+                    Style="{StaticResource Card}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!--  En-tête section  -->
+                        <Border
+                            Grid.Row="0"
+                            Padding="18,12"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="0,0,0,1">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:FontIcon
+                                    Margin="0,0,8,0"
+                                    FontSize="12"
+                                    Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                                    Glyph="&#xE716;" />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="11"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Text="MES AMIS" />
+                            </StackPanel>
+                        </Border>
+                        <ProgressBar
+                            Grid.Row="0"
+                            Height="2"
+                            VerticalAlignment="Bottom"
+                            IsIndeterminate="True"
+                            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}" />
+
+                        <!--  ── EN LIGNE ──  -->
+                        <Border
+                            Grid.Row="1"
+                            Padding="14,8,14,2"
+                            Visibility="{Binding HasOnlineFriends, Converter={StaticResource BoolToVis}}">
+                            <TextBlock
+                                FontSize="10"
+                                FontWeight="Bold"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Text="EN LIGNE" />
+                        </Border>
+
+                        <ItemsControl
+                            Grid.Row="2"
+                            Margin="10,0,10,6"
+                            ItemsSource="{Binding OnlineFriends}"
+                            Visibility="{Binding HasOnlineFriends, Converter={StaticResource BoolToVis}}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border
+                                        Margin="0,3"
+                                        Padding="14,11"
+                                        Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="0"
+                                        Cursor="Hand">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="BorderThickness" Value="1" />
+                                                <Setter Property="BorderBrush"
+                                                        Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+                                                <Setter Property="Background"
+                                                        Value="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}" />
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background"
+                                                                Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                                        <Setter Property="BorderBrush"
+                                                                Value="{DynamicResource AccentFillColorTertiaryBrush}" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Border.InputBindings>
+                                            <MouseBinding
+                                                Command="{Binding DataContext.OpenChatCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding Dto}"
+                                                MouseAction="LeftDoubleClick" />
+                                        </Border.InputBindings>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid
+                                                Grid.Column="0"
+                                                Width="42"
+                                                Height="42"
+                                                Margin="0,0,14,0">
+                                                <ui:PersonPicture
+                                                    Width="42"
+                                                    Height="42"
+                                                    Initials="{Binding Initials}" />
+                                                <Ellipse
+                                                    Width="12"
+                                                    Height="12"
+                                                    HorizontalAlignment="Right"
+                                                    VerticalAlignment="Bottom"
+                                                    Stroke="{DynamicResource ApplicationPageBackgroundThemeBrush}"
+                                                    StrokeThickness="2">
+                                                    <Ellipse.Fill>
+                                                        <SolidColorBrush
+                                                            Color="{Binding Status, Converter={StaticResource StatusToColor}}" />
+                                                    </Ellipse.Fill>
+                                                </Ellipse>
+                                            </Grid>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock
+                                                    FontSize="13"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                    Text="{Binding Username}" />
+                                                <TextBlock
+                                                    Margin="0,2,0,0"
+                                                    FontSize="11"
+                                                    Foreground="{Binding Status, Converter={StaticResource StatusToBrush}}"
+                                                    Text="{Binding Status, Converter={StaticResource StatusToString}}" />
+                                            </StackPanel>
+                                            <!--  Badge message non lu  -->
+                                            <Ellipse
+                                                Grid.Column="2"
+                                                Width="8"
+                                                Height="8"
+                                                Margin="0,0,10,0"
+                                                VerticalAlignment="Center"
+                                                Fill="{DynamicResource AccentFillColorDefaultBrush}"
+                                                Visibility="{Binding HasUnread, Converter={StaticResource BoolToVis}}" />
+                                            <StackPanel
+                                                Grid.Column="3"
+                                                VerticalAlignment="Center"
+                                                Orientation="Horizontal">
+                                                <Button
+                                                    Margin="0,0,6,0"
+                                                    Padding="10,5"
+                                                    Command="{Binding DataContext.OpenChatCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding Dto}"
+                                                    Style="{StaticResource AccentButtonStyle}"
+                                                    ToolTip="Discuter">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <ui:FontIcon
+                                                            Margin="0,0,5,0"
+                                                            FontSize="12"
+                                                            Glyph="&#xE8BD;" />
+                                                        <TextBlock FontSize="11" Text="Discuter" />
+                                                    </StackPanel>
+                                                </Button>
+                                                <Button
+                                                    Padding="10,5"
+                                                    Command="{Binding DataContext.RemoveFriendCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding Dto}"
+                                                    Content="Retirer"
+                                                    FontSize="11"
+                                                    Style="{StaticResource DangerButton}" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!--  ── HORS LIGNE ──  -->
+                        <ItemsControl
+                            Grid.Row="3"
+                            Margin="10,0,10,10"
+                            ItemsSource="{Binding OfflineFriends}"
+                            Visibility="{Binding HasOfflineFriends, Converter={StaticResource BoolToVis}}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border
+                                        Margin="0,3"
+                                        Padding="14,11"
+                                        Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="0"
+                                        Cursor="Hand">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="BorderThickness" Value="1" />
+                                                <Setter Property="BorderBrush"
+                                                        Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+                                                <Setter Property="Background"
+                                                        Value="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}" />
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background"
+                                                                Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                                        <Setter Property="BorderBrush"
+                                                                Value="{DynamicResource AccentFillColorTertiaryBrush}" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Border.InputBindings>
+                                            <MouseBinding
+                                                Command="{Binding DataContext.OpenChatCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding Dto}"
+                                                MouseAction="LeftDoubleClick" />
+                                        </Border.InputBindings>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid
+                                                Grid.Column="0"
+                                                Width="42"
+                                                Height="42"
+                                                Margin="0,0,14,0">
+                                                <ui:PersonPicture
+                                                    Width="42"
+                                                    Height="42"
+                                                    Initials="{Binding Initials}" />
+                                                <Ellipse
+                                                    Width="12"
+                                                    Height="12"
+                                                    HorizontalAlignment="Right"
+                                                    VerticalAlignment="Bottom"
+                                                    Stroke="{DynamicResource ApplicationPageBackgroundThemeBrush}"
+                                                    StrokeThickness="2">
+                                                    <Ellipse.Fill>
+                                                        <SolidColorBrush
+                                                            Color="{Binding Status, Converter={StaticResource StatusToColor}}" />
+                                                    </Ellipse.Fill>
+                                                </Ellipse>
+                                            </Grid>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock
+                                                    FontSize="13"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                    Text="{Binding Username}" />
+                                                <TextBlock
+                                                    Margin="0,2,0,0"
+                                                    FontSize="11"
+                                                    Foreground="{Binding Status, Converter={StaticResource StatusToBrush}}"
+                                                    Text="{Binding Status, Converter={StaticResource StatusToString}}" />
+                                            </StackPanel>
+                                            <!--  Badge message non lu  -->
+                                            <Ellipse
+                                                Grid.Column="2"
+                                                Width="8"
+                                                Height="8"
+                                                Margin="0,0,10,0"
+                                                VerticalAlignment="Center"
+                                                Fill="{DynamicResource AccentFillColorDefaultBrush}"
+                                                Visibility="{Binding HasUnread, Converter={StaticResource BoolToVis}}" />
+                                            <StackPanel
+                                                Grid.Column="3"
+                                                VerticalAlignment="Center"
+                                                Orientation="Horizontal">
+                                                <Button
+                                                    Margin="0,0,6,0"
+                                                    Padding="10,5"
+                                                    Command="{Binding DataContext.OpenChatCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding Dto}"
+                                                    Style="{StaticResource AccentButtonStyle}"
+                                                    ToolTip="Discuter">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <ui:FontIcon
+                                                            Margin="0,0,5,0"
+                                                            FontSize="12"
+                                                            Glyph="&#xE8BD;" />
+                                                        <TextBlock FontSize="11" Text="Discuter" />
+                                                    </StackPanel>
+                                                </Button>
+                                                <Button
+                                                    Padding="10,5"
+                                                    Command="{Binding DataContext.RemoveFriendCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding Dto}"
+                                                    Content="Retirer"
+                                                    FontSize="11"
+                                                    Style="{StaticResource DangerButton}" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

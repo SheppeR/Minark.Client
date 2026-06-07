@@ -1,0 +1,1 @@
+global using Minark.Game.Shared.DTOs;

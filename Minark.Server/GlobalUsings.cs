@@ -1,0 +1,10 @@
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Hosting;
+global using Microsoft.Extensions.Logging;
+global using Minark.Shared.Packets;
+global using Minark.Shared.Packets.Auth;
+global using Minark.Shared.Packets.Chat;
+global using Minark.Shared.Packets.Friends;
+global using Minark.Shared.Packets.News;
+global using Minark.Server.Networking.Handlers;

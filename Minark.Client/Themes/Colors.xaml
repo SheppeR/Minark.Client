@@ -1,0 +1,91 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="clr-namespace:Minark.Client.Converters">
+
+    <!--
+        ════════════════════════════════════════════════════════════════════
+        RESSOURCES NON-THÉMABLES
+        Tout ce qui ne change pas entre Dark et Light :
+        - Converters
+        - Palette d'accent (pilotée par AccentService au runtime)
+        - Brushes status / danger
+        - Constantes (CornerRadius des bulles)
+        Les surfaces / textes / borders sont dans Colors.Dark.xaml et
+        Colors.Light.xaml et chargés par ThemeService.
+        ════════════════════════════════════════════════════════════════════
+    -->
+
+    <!--  ══ CONVERTERS ══════════════════════════════════════════════════════  -->
+    <conv:BoolToVisibilityConverter x:Key="BoolToVis" />
+    <conv:BoolToVisibilityConverter x:Key="BoolToVisNot" Inverse="True" />
+    <conv:StringToVisibilityConverter x:Key="StringToVis" />
+    <conv:UserStatusConverter x:Key="StatusToColor" />
+    <conv:UserStatusConverter x:Key="StatusToString" Mode="string" />
+    <conv:UserStatusConverter x:Key="StatusToBrush" Mode="brush" />
+    <conv:StringToImageSourceConverter x:Key="UrlToImage" />
+    <conv:BoolToFontStyleConverter x:Key="BoolToItalic" />
+    <conv:StringToInitialsConverter x:Key="StringToInitials" />
+    <conv:ContentToBlocksConverter x:Key="ContentToBlocks" />
+
+    <!--  ══ ACCENT — Color resources (overridées par AccentService au runtime) ══  -->
+    <Color x:Key="C_Accent1">#7C3AED</Color>
+    <Color x:Key="C_Accent2">#EC4899</Color>
+    <Color x:Key="C_AccentSoft">#a78bfa</Color>
+    <Color x:Key="C_AccentDark">#4F46E5</Color>
+    <Color x:Key="C_AccentLight">#9D5FF5</Color>
+    <Color x:Key="C_AccentMenuHi">#267C3AED</Color>
+
+    <!--  Translucent accent variants (alpha %-based on C_Accent1, also remixed by AccentService)  -->
+    <Color x:Key="C_Accent1_14">#147C3AED</Color>
+    <Color x:Key="C_Accent1_1A">#1A7C3AED</Color>
+    <Color x:Key="C_Accent1_22">#227C3AED</Color>
+    <Color x:Key="C_Accent1_26">#267C3AED</Color>
+    <Color x:Key="C_Accent1_2A">#2A7C3AED</Color>
+    <Color x:Key="C_Accent1_33">#337C3AED</Color>
+    <Color x:Key="C_Accent1_40">#407C3AED</Color>
+    <Color x:Key="C_Accent1_50">#507C3AED</Color>
+    <Color x:Key="C_Accent1_66">#667C3AED</Color>
+    <Color x:Key="C_Accent1_80">#807C3AED</Color>
+    <Color x:Key="C_Accent1_CC">#CC7C3AED</Color>
+    <Color x:Key="C_Accent2_40">#40EC4899</Color>
+    <Color x:Key="C_Accent2_50">#50EC4899</Color>
+    <Color x:Key="C_AccentDark_2A">#2A4F46E5</Color>
+    <Color x:Key="C_AccentDark_CC">#CC4F46E5</Color>
+    <Color x:Key="C_AccentSoft_33">#33a78bfa</Color>
+
+    <!--  Brushes for the most common alpha-accent uses  -->
+    <SolidColorBrush x:Key="AccentHoverBg" Color="{DynamicResource C_Accent1_1A}" />
+    <SolidColorBrush x:Key="AccentSelectedBg" Color="{DynamicResource C_Accent1_26}" />
+    <SolidColorBrush x:Key="AccentPressedBg" Color="{DynamicResource C_Accent1_2A}" />
+    <SolidColorBrush x:Key="AccentBorderSoft" Color="{DynamicResource C_Accent1_22}" />
+    <SolidColorBrush x:Key="AccentBorderHover" Color="{DynamicResource C_Accent1_66}" />
+    <SolidColorBrush x:Key="AccentWatermark" Color="{DynamicResource C_AccentSoft_33}" />
+
+    <!--  ══ ACCENT GRADIENTS (réécrits par AccentService) ═══════════════════  -->
+    <LinearGradientBrush x:Key="AccentGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0" Color="{DynamicResource C_Accent1}" />
+        <GradientStop Offset="1" Color="{DynamicResource C_Accent2}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="AccentGradientH" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="{DynamicResource C_Accent1}" />
+        <GradientStop Offset="1" Color="{DynamicResource C_AccentDark}" />
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="AccentPrimary" Color="{DynamicResource C_Accent1}" />
+    <SolidColorBrush x:Key="AccentSecondary" Color="{DynamicResource C_Accent2}" />
+    <SolidColorBrush x:Key="AccentSoft" Color="{DynamicResource C_AccentSoft}" />
+    <SolidColorBrush x:Key="AccentGlow" Color="{DynamicResource C_AccentMenuHi}" />
+
+    <!--  ══ STATUS / DANGER (identiques en dark et light) ══════════════════  -->
+    <SolidColorBrush x:Key="StatusOnline" Color="#22c55e" />
+    <SolidColorBrush x:Key="StatusAway" Color="#fbbf24" />
+    <SolidColorBrush x:Key="StatusBusy" Color="#ef4444" />
+    <SolidColorBrush x:Key="StatusOffline" Color="#606080" />
+    <SolidColorBrush x:Key="Danger" Color="#ef4444" />
+
+    <!--  ══ CHAT BUBBLES — constantes ═══════════════════════════════════════  -->
+    <CornerRadius x:Key="BubbleOwn">16,4,16,16</CornerRadius>
+    <CornerRadius x:Key="BubbleOther">4,16,16,16</CornerRadius>
+
+</ResourceDictionary>

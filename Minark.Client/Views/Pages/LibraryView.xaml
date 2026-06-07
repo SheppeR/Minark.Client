@@ -1,0 +1,154 @@
+<UserControl
+    x:Class="Minark.Client.Views.Pages.LibraryView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern">
+
+    <Grid>
+        <Border Background="{DynamicResource Surface0}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!--  HEADER  -->
+                <StackPanel Grid.Row="0" Margin="32,28,32,0">
+                    <TextBlock
+                        Margin="0,0,0,6"
+                        FontSize="22"
+                        FontWeight="Bold"
+                        Foreground="{DynamicResource Text1}"
+                        Text="Bibliothèque" />
+                    <TextBlock
+                        Margin="0,0,0,24"
+                        FontSize="12"
+                        Foreground="{DynamicResource Text3}"
+                        Text="Lance et explore ton jeu" />
+                </StackPanel>
+
+                <!--  CONTENU  -->
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!--  Bandeau hero  -->
+                    <Border
+                        Grid.Row="0"
+                        Height="200"
+                        Margin="0,0,0,0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Offset="0" Color="{DynamicResource C_Accent1_14}" />
+                                <GradientStop Offset="1" Color="#00000000" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Grid>
+                            <StackPanel Margin="32,0" VerticalAlignment="Center">
+                                <TextBlock
+                                    FontSize="36"
+                                    FontWeight="Bold"
+                                    Foreground="{DynamicResource Text1}"
+                                    Text="Minark" />
+                                <TextBlock
+                                    Margin="0,4,0,0"
+                                    FontSize="13"
+                                    Foreground="{DynamicResource Text3}">
+                                    <Run Text="Installé : " />
+                                    <Run
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource AccentText}"
+                                        Text="{Binding InstalledVersion, Mode=OneWay}" />
+                                </TextBlock>
+                            </StackPanel>
+
+                            <!--  Bouton JOUER  -->
+                            <Button
+                                Width="180"
+                                Height="52"
+                                Margin="32,0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Command="{Binding PlayCommand}"
+                                Visibility="{Binding CanPlay, Converter={StaticResource BoolToVis}}">
+                                <Button.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Offset="0" Color="{DynamicResource C_Accent1}" />
+                                        <GradientStop Offset="1" Color="{DynamicResource C_Accent2}" />
+                                    </LinearGradientBrush>
+                                </Button.Background>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:FontIcon
+                                        Margin="0,0,10,0"
+                                        FontSize="18"
+                                        Foreground="White"
+                                        Glyph="&#xE768;" />
+                                    <TextBlock
+                                        FontSize="16"
+                                        FontWeight="Bold"
+                                        Foreground="White"
+                                        Text="JOUER" />
+                                </StackPanel>
+                            </Button>
+
+                            <!--  Pas installé  -->
+                            <Button
+                                Width="180"
+                                Height="52"
+                                Margin="32,0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Command="{Binding GoToDownloadCommand}"
+                                Visibility="{Binding CanDownload, Converter={StaticResource BoolToVis}}">
+                                <Button.Background>
+                                    <SolidColorBrush Color="{DynamicResource C_Surface1}" />
+                                </Button.Background>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:FontIcon
+                                        Margin="0,0,10,0"
+                                        FontSize="16"
+                                        Foreground="{DynamicResource AccentText}"
+                                        Glyph="&#xE896;" />
+                                    <TextBlock
+                                        FontSize="13"
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource AccentText}"
+                                        Text="TÉLÉCHARGER" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                    </Border>
+
+                    <!--  Placeholder captures d'écran  -->
+                    <StackPanel
+                        Grid.Row="1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                        <ui:FontIcon
+                            Margin="0,0,0,16"
+                            HorizontalAlignment="Center"
+                            FontSize="48"
+                            Foreground="{DynamicResource AccentWatermark}"
+                            Glyph="&#xEB9F;" />
+                        <TextBlock
+                            Margin="0,0,0,6"
+                            HorizontalAlignment="Center"
+                            FontSize="16"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource Text2}"
+                            Text="Captures d'écran" />
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            FontSize="12"
+                            Foreground="{DynamicResource Text3}"
+                            Text="Les captures d'écran du jeu apparaîtront ici." />
+                    </StackPanel>
+
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

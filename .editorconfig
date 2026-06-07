@@ -1,0 +1,7 @@
+﻿[*.cs]
+
+# Default severity for analyzer diagnostics with category 'CommunityToolkit.Mvvm.SourceGenerators.ObservablePropertyGenerator'
+dotnet_analyzer_diagnostic.category-CommunityToolkit.Mvvm.SourceGenerators.ObservablePropertyGenerator.severity = none
+
+# CS8602: Déréférencement d'une éventuelle référence null.
+dotnet_diagnostic.CS8602.severity = none

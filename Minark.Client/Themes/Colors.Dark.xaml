@@ -1,0 +1,113 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        ════════════════════════════════════════════════════════════════════
+        DARK THEME PALETTE
+        Toutes les couleurs et brushes thémables du thème sombre.
+        Doit exposer LES MÊMES CLÉS que Colors.Light.xaml.
+        ════════════════════════════════════════════════════════════════════
+    -->
+
+    <!--  ══ SURFACES — Color resources ══════════════════════════════════════  -->
+    <Color x:Key="C_Surface0">#080613</Color>
+    <Color x:Key="C_Surface1">#0D0B1A</Color>
+    <Color x:Key="C_Surface2">#13112A</Color>
+    <Color x:Key="C_Surface3">#1A1735</Color>
+    <Color x:Key="C_Surface4">#221F42</Color>
+    <Color x:Key="C_Border1">#1E1B38</Color>
+    <Color x:Key="C_Text1">#F0EEFF</Color>
+    <Color x:Key="C_Text2">#9B96C4</Color>
+    <Color x:Key="C_Text3">#514C7A</Color>
+
+    <!--  ══ SURFACES — Brushes (consommés en {DynamicResource Surface…}) ════  -->
+    <SolidColorBrush x:Key="Surface0" Color="#080613" />
+    <SolidColorBrush x:Key="Surface1" Color="#0D0B1A" />
+    <SolidColorBrush x:Key="Surface2" Color="#13112A" />
+    <SolidColorBrush x:Key="Surface3" Color="#1A1735" />
+    <SolidColorBrush x:Key="Surface4" Color="#221F42" />
+    <SolidColorBrush x:Key="Border1" Color="#1E1B38" />
+    <SolidColorBrush x:Key="Text1" Color="#F0EEFF" />
+    <SolidColorBrush x:Key="Text2" Color="#9B96C4" />
+    <SolidColorBrush x:Key="Text3" Color="#514C7A" />
+
+    <!--  ══ SIDEBAR / HERO — Gradients verticaux pilotés par thème ═════════  -->
+    <LinearGradientBrush x:Key="SidebarGradient" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#0D0B1A" />
+        <GradientStop Offset="1" Color="#0A0818" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="HeroOverlay" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#E6080614" />
+        <GradientStop Offset="0.5" Color="#800D0B1A" />
+        <GradientStop Offset="1" Color="#00000000" />
+    </LinearGradientBrush>
+
+    <!--
+        Hero card — fond profond (HomeView)
+        Utilisé comme fond du gradient Start/Mid/End du hero
+    -->
+    <Color x:Key="C_HeroBgStart">#1A1040</Color>
+    <Color x:Key="C_HeroBgMid">#2D1B69</Color>
+
+    <!--  Hero overlay gauche (HomeView) : dégradé gauche-droite par-dessus le hero  -->
+    <Color x:Key="C_HeroOverlayLeft0">#F2080613</Color>
+    <Color x:Key="C_HeroOverlayLeft1">#CC0D0B1A</Color>
+    <Color x:Key="C_HeroOverlayLeft2">#800D0B1A</Color>
+
+    <!--  Hero "montagnes" silhouettes (HomeView)  -->
+    <Color x:Key="C_MountainFar">#1A0A0820</Color>
+    <Color x:Key="C_MountainMid">#CC080613</Color>
+    <Color x:Key="C_MountainNear">#F5080613</Color>
+    <Color x:Key="C_MountainSilhouette">#CC080613</Color>
+    <SolidColorBrush x:Key="MountainFarBrush" Color="#1A0A0820" />
+    <SolidColorBrush x:Key="MountainMidBrush" Color="#CC080613" />
+    <SolidColorBrush x:Key="MountainNearBrush" Color="#F5080613" />
+    <SolidColorBrush x:Key="MountainSilhouetteBrush" Color="#CC080613" />
+
+    <!--  Topbar HomeView (overlay au-dessus du fond)  -->
+    <Color x:Key="C_TopbarBg">#E6080613</Color>
+
+    <!--
+        News card overlay bottom (HomeView article cards) : voile sombre pour
+        garder le texte blanc lisible par-dessus une image héro
+    -->
+    <Color x:Key="C_NewsCardOverlay">#F0080613</Color>
+
+    <!--  Bordure ombre fine sur les cards (différente selon thème)  -->
+    <Color x:Key="C_ShadowEdge">#33000000</Color>
+    <SolidColorBrush x:Key="ShadowEdge" Color="#33000000" />
+
+    <!--
+        ══ OVERLAYS NEUTRES — translucides pour les zones sur fond accent ══
+        Exemple : header de ChatWindow / FriendsWindow où le fond est AccentGradient.
+        En dark, on superpose du blanc translucide. En light, du noir translucide.
+    -->
+    <SolidColorBrush x:Key="OnAccentChip" Color="#22FFFFFF" />
+    <SolidColorBrush x:Key="OnAccentChipBorder" Color="#30FFFFFF" />
+    <SolidColorBrush x:Key="OnAccentChipStrong" Color="#33FFFFFF" />
+    <SolidColorBrush x:Key="OnAccentBorderStrong" Color="#66FFFFFF" />
+    <SolidColorBrush x:Key="OnAccentSubtle" Color="#1AFFFFFF" />
+    <SolidColorBrush x:Key="OnAccentText" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="OnAccentTextSoft" Color="#CCFFFFFF" />
+    <SolidColorBrush x:Key="OnAccentTextMuted" Color="#99FFFFFF" />
+
+    <!--  "Hover row" générique (rangée de liste qui s'éclaire au survol)  -->
+    <SolidColorBrush x:Key="HoverRowBg" Color="#10FFFFFF" />
+
+    <!--  ══ TOAST / NOTIFICATION ════════════════════════════════════════════  -->
+    <SolidColorBrush x:Key="ToastTitle" Color="#F0F0FF" />
+    <SolidColorBrush x:Key="ToastBody" Color="#9090B0" />
+    <Color x:Key="C_ToastShadow">#000000</Color>
+
+    <!--  ══ MAINWINDOW — bannière "Serveur hors ligne" flottante ═══════════  -->
+    <Color x:Key="C_OfflineBannerStart">#CC1A1A2E</Color>
+    <Color x:Key="C_OfflineBannerEnd">#CC2D1B4E</Color>
+    <SolidColorBrush x:Key="OfflineBannerText" Color="#F0F0FF" />
+
+    <!--  ══ SETTINGS — accent color picker actif ═══════════════════════════  -->
+    <!--
+        Le ring/check par-dessus une swatch sélectionnée doit être visible
+        sur des couleurs de toutes teintes. En dark on choisit blanc translucide.
+    -->
+    <SolidColorBrush x:Key="ColorSwatchSelectedRing" Color="#FFFFFFFF" />
+
+</ResourceDictionary>

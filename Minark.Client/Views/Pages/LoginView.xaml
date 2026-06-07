@@ -1,0 +1,834 @@
+<UserControl
+    x:Class="Minark.Client.Views.Pages.LoginView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:beh="clr-namespace:Minark.Client.Behaviors"
+    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern">
+
+    <UserControl.Resources>
+
+        <!--  Rotation anneaux  -->
+        <Storyboard x:Key="SpinRing1" RepeatBehavior="Forever">
+            <DoubleAnimation
+                Storyboard.TargetName="Ring1Rotate"
+                Storyboard.TargetProperty="Angle"
+                From="0"
+                To="360"
+                Duration="0:0:18" />
+        </Storyboard>
+        <Storyboard x:Key="SpinRing2" RepeatBehavior="Forever">
+            <DoubleAnimation
+                Storyboard.TargetName="Ring2Rotate"
+                Storyboard.TargetProperty="Angle"
+                From="360"
+                To="0"
+                Duration="0:0:12" />
+        </Storyboard>
+        <Storyboard x:Key="SpinRing3" RepeatBehavior="Forever">
+            <DoubleAnimation
+                Storyboard.TargetName="Ring3Rotate"
+                Storyboard.TargetProperty="Angle"
+                From="0"
+                To="360"
+                Duration="0:0:7" />
+        </Storyboard>
+
+        <!--  Glow pulsation  -->
+        <Storyboard
+            x:Key="GlowPulse"
+            AutoReverse="True"
+            RepeatBehavior="Forever">
+            <DoubleAnimation
+                Storyboard.TargetName="CoreGlow"
+                Storyboard.TargetProperty="(UIElement.Effect).(DropShadowEffect.BlurRadius)"
+                From="20"
+                To="55"
+                Duration="0:0:2">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation
+                Storyboard.TargetName="CoreGlow"
+                Storyboard.TargetProperty="(UIElement.Effect).(DropShadowEffect.Opacity)"
+                From="0.5"
+                To="1.0"
+                Duration="0:0:2">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+
+        <!--  Scale logo  -->
+        <Storyboard
+            x:Key="LogoPulse"
+            AutoReverse="True"
+            RepeatBehavior="Forever">
+            <DoubleAnimation
+                Storyboard.TargetName="LogoScale"
+                Storyboard.TargetProperty="ScaleX"
+                From="1.0"
+                To="1.07"
+                Duration="0:0:2.2">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation
+                Storyboard.TargetName="LogoScale"
+                Storyboard.TargetProperty="ScaleY"
+                From="1.0"
+                To="1.07"
+                Duration="0:0:2.2">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+
+        <!--  Gradient spin  -->
+        <Storyboard x:Key="LogoGradientSpin" RepeatBehavior="Forever">
+            <DoubleAnimation
+                Storyboard.TargetName="LogoGradientRotate"
+                Storyboard.TargetProperty="Angle"
+                From="0"
+                To="360"
+                Duration="0:0:4" />
+        </Storyboard>
+
+        <!--  Halo ripple  -->
+        <Storyboard
+            x:Key="HaloPulse"
+            AutoReverse="True"
+            RepeatBehavior="Forever">
+            <DoubleAnimation
+                Storyboard.TargetName="OuterHalo"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                From="1.0"
+                To="1.15"
+                Duration="0:0:3">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation
+                Storyboard.TargetName="OuterHalo"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                From="1.0"
+                To="1.15"
+                Duration="0:0:3">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation
+                Storyboard.TargetName="OuterHalo"
+                Storyboard.TargetProperty="Opacity"
+                From="0.12"
+                To="0.0"
+                Duration="0:0:3">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+
+        <!--  Plasma orb 1  -->
+        <Storyboard
+            x:Key="PlasmaOrb1"
+            AutoReverse="True"
+            RepeatBehavior="Forever">
+            <DoubleAnimation
+                Storyboard.TargetName="PlasmaOrb1Trans"
+                Storyboard.TargetProperty="X"
+                From="-80"
+                To="120"
+                Duration="0:0:8">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation
+                Storyboard.TargetName="PlasmaOrb1Trans"
+                Storyboard.TargetProperty="Y"
+                From="-60"
+                To="80"
+                Duration="0:0:11">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation
+                Storyboard.TargetName="PlasmaOrb1"
+                Storyboard.TargetProperty="Opacity"
+                From="0.06"
+                To="0.15"
+                Duration="0:0:5">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+
+        <!--  Plasma orb 2  -->
+        <Storyboard
+            x:Key="PlasmaOrb2"
+            AutoReverse="True"
+            RepeatBehavior="Forever">
+            <DoubleAnimation
+                Storyboard.TargetName="PlasmaOrb2Trans"
+                Storyboard.TargetProperty="X"
+                From="60"
+                To="-100"
+                Duration="0:0:13">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation
+                Storyboard.TargetName="PlasmaOrb2Trans"
+                Storyboard.TargetProperty="Y"
+                From="40"
+                To="-90"
+                Duration="0:0:9">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation
+                Storyboard.TargetName="PlasmaOrb2"
+                Storyboard.TargetProperty="Opacity"
+                From="0.05"
+                To="0.13"
+                Duration="0:0:7">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+
+        <!--  Plasma orb 3  -->
+        <Storyboard
+            x:Key="PlasmaOrb3"
+            AutoReverse="True"
+            RepeatBehavior="Forever">
+            <DoubleAnimation
+                Storyboard.TargetName="PlasmaOrb3Trans"
+                Storyboard.TargetProperty="X"
+                From="-40"
+                To="90"
+                Duration="0:0:10">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation
+                Storyboard.TargetName="PlasmaOrb3Trans"
+                Storyboard.TargetProperty="Y"
+                From="70"
+                To="-50"
+                Duration="0:0:6">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+
+        <!--  Slide-in form avec stagger  -->
+        <Storyboard x:Key="FormIn">
+            <DoubleAnimation
+                Storyboard.TargetName="FormTranslate"
+                Storyboard.TargetProperty="X"
+                From="80"
+                To="0"
+                Duration="0:0:0.7">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation
+                Storyboard.TargetName="FormPanel"
+                Storyboard.TargetProperty="Opacity"
+                From="0"
+                To="1"
+                Duration="0:0:0.6" />
+        </Storyboard>
+
+        <!--  Stagger champs  -->
+        <Storyboard x:Key="Field1In">
+            <DoubleAnimation
+                BeginTime="0:0:0.5"
+                Storyboard.TargetName="Field1"
+                Storyboard.TargetProperty="Opacity"
+                From="0"
+                To="1"
+                Duration="0:0:0.4" />
+            <DoubleAnimation
+                BeginTime="0:0:0.5"
+                Storyboard.TargetName="Field1Translate"
+                Storyboard.TargetProperty="Y"
+                From="12"
+                To="0"
+                Duration="0:0:0.35">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+        <Storyboard x:Key="Field2In">
+            <DoubleAnimation
+                BeginTime="0:0:0.6"
+                Storyboard.TargetName="Field2"
+                Storyboard.TargetProperty="Opacity"
+                From="0"
+                To="1"
+                Duration="0:0:0.4" />
+            <DoubleAnimation
+                BeginTime="0:0:0.6"
+                Storyboard.TargetName="Field2Translate"
+                Storyboard.TargetProperty="Y"
+                From="12"
+                To="0"
+                Duration="0:0:0.35">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+        <Storyboard x:Key="Field3In">
+            <DoubleAnimation
+                BeginTime="0:0:0.7"
+                Storyboard.TargetName="Field3"
+                Storyboard.TargetProperty="Opacity"
+                From="0"
+                To="1"
+                Duration="0:0:0.4" />
+            <DoubleAnimation
+                BeginTime="0:0:0.7"
+                Storyboard.TargetName="Field3Translate"
+                Storyboard.TargetProperty="Y"
+                From="12"
+                To="0"
+                Duration="0:0:0.35">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+        <Storyboard x:Key="Field4In">
+            <DoubleAnimation
+                BeginTime="0:0:0.8"
+                Storyboard.TargetName="Field4"
+                Storyboard.TargetProperty="Opacity"
+                From="0"
+                To="1"
+                Duration="0:0:0.4" />
+            <DoubleAnimation
+                BeginTime="0:0:0.8"
+                Storyboard.TargetName="Field4Translate"
+                Storyboard.TargetProperty="Y"
+                From="12"
+                To="0"
+                Duration="0:0:0.35">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+
+        <!--  Brand text  -->
+        <Storyboard x:Key="BrandTextIn">
+            <DoubleAnimation
+                BeginTime="0:0:0.3"
+                Storyboard.TargetName="BrandText"
+                Storyboard.TargetProperty="Opacity"
+                From="0"
+                To="1"
+                Duration="0:0:1.2" />
+            <DoubleAnimation
+                BeginTime="0:0:0.3"
+                Storyboard.TargetName="BrandTextTranslate"
+                Storyboard.TargetProperty="Y"
+                From="20"
+                To="0"
+                Duration="0:0:0.8">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+
+    </UserControl.Resources>
+
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard Storyboard="{StaticResource SpinRing1}" />
+            <BeginStoryboard Storyboard="{StaticResource SpinRing2}" />
+            <BeginStoryboard Storyboard="{StaticResource SpinRing3}" />
+            <BeginStoryboard Storyboard="{StaticResource GlowPulse}" />
+            <BeginStoryboard Storyboard="{StaticResource LogoPulse}" />
+            <BeginStoryboard Storyboard="{StaticResource LogoGradientSpin}" />
+            <BeginStoryboard Storyboard="{StaticResource HaloPulse}" />
+            <BeginStoryboard Storyboard="{StaticResource PlasmaOrb1}" />
+            <BeginStoryboard Storyboard="{StaticResource PlasmaOrb2}" />
+            <BeginStoryboard Storyboard="{StaticResource PlasmaOrb3}" />
+            <BeginStoryboard Storyboard="{StaticResource FormIn}" />
+            <BeginStoryboard Storyboard="{StaticResource BrandTextIn}" />
+            <BeginStoryboard Storyboard="{StaticResource Field1In}" />
+            <BeginStoryboard Storyboard="{StaticResource Field2In}" />
+            <BeginStoryboard Storyboard="{StaticResource Field3In}" />
+            <BeginStoryboard Storyboard="{StaticResource Field4In}" />
+        </EventTrigger>
+    </UserControl.Triggers>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="380" />
+        </Grid.ColumnDefinitions>
+
+        <!--  ══ BRAND PANEL ════════════════════════════════════════════════════  -->
+        <Border
+            x:Name="BrandPanel"
+            Grid.Column="0"
+            ClipToBounds="True">
+            <Border.Background>
+                <SolidColorBrush Color="{DynamicResource C_Surface1}" />
+            </Border.Background>
+
+            <Grid>
+                <!--  Plasma orbs flottantes  -->
+                <Canvas IsHitTestVisible="False">
+                    <!--  Orb 1 : grande, violet chaud  -->
+                    <Ellipse
+                        x:Name="PlasmaOrb1"
+                        Canvas.Left="-60"
+                        Canvas.Top="-40"
+                        Width="500"
+                        Height="500"
+                        Opacity="0.08">
+                        <Ellipse.RenderTransform>
+                            <TranslateTransform x:Name="PlasmaOrb1Trans" />
+                        </Ellipse.RenderTransform>
+                        <Ellipse.Fill>
+                            <RadialGradientBrush>
+                                <GradientStop Offset="0" Color="{DynamicResource C_Accent1}" />
+                                <GradientStop Offset="0.5" Color="{DynamicResource C_Accent2}" />
+                                <GradientStop Offset="1" Color="Transparent" />
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
+                    <!--  Orb 2 : bleue froide, bas droite  -->
+                    <Ellipse
+                        x:Name="PlasmaOrb2"
+                        Canvas.Right="-60"
+                        Canvas.Bottom="-40"
+                        Width="400"
+                        Height="400"
+                        Opacity="0.06">
+                        <Ellipse.RenderTransform>
+                            <TranslateTransform x:Name="PlasmaOrb2Trans" />
+                        </Ellipse.RenderTransform>
+                        <Ellipse.Fill>
+                            <RadialGradientBrush>
+                                <GradientStop Offset="0" Color="{DynamicResource C_AccentDark}" />
+                                <GradientStop Offset="1" Color="Transparent" />
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
+                    <!--  Orb 3 : rose, haut gauche  -->
+                    <Ellipse
+                        x:Name="PlasmaOrb3"
+                        Canvas.Left="-80"
+                        Canvas.Top="-60"
+                        Width="340"
+                        Height="340"
+                        Opacity="0.07">
+                        <Ellipse.RenderTransform>
+                            <TranslateTransform x:Name="PlasmaOrb3Trans" />
+                        </Ellipse.RenderTransform>
+                        <Ellipse.Fill>
+                            <RadialGradientBrush>
+                                <GradientStop Offset="0" Color="{DynamicResource C_Accent2}" />
+                                <GradientStop Offset="1" Color="Transparent" />
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
+                </Canvas>
+
+                <!--  Constellation canvas (code-behind)  -->
+                <Canvas x:Name="ConstellationCanvas" ClipToBounds="True" />
+
+                <!--  Système d'anneaux central  -->
+                <Grid
+                    x:Name="OrbitSystem"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+
+                    <Ellipse
+                        x:Name="OuterHalo"
+                        Width="320"
+                        Height="320"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Opacity="0.12">
+                        <Ellipse.RenderTransform>
+                            <ScaleTransform CenterX="160" CenterY="160" ScaleX="1" ScaleY="1" />
+                        </Ellipse.RenderTransform>
+                        <Ellipse.Fill>
+                            <RadialGradientBrush>
+                                <GradientStop Offset="0.5" Color="{DynamicResource C_Accent1}" />
+                                <GradientStop Offset="1" Color="Transparent" />
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
+
+                    <Ellipse
+                        Width="260"
+                        Height="260"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        StrokeThickness="1.5">
+                        <Ellipse.RenderTransform>
+                            <RotateTransform x:Name="Ring1Rotate" CenterX="130" CenterY="130" />
+                        </Ellipse.RenderTransform>
+                        <Ellipse.Stroke>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Offset="0" Color="{DynamicResource C_Accent1}" />
+                                <GradientStop Offset="0.45" Color="Transparent" />
+                                <GradientStop Offset="1" Color="{DynamicResource C_AccentDark}" />
+                            </LinearGradientBrush>
+                        </Ellipse.Stroke>
+                        <Ellipse.StrokeDashArray>
+                            <DoubleCollection>6 4</DoubleCollection>
+                        </Ellipse.StrokeDashArray>
+                    </Ellipse>
+
+                    <Canvas
+                        Width="260"
+                        Height="260"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                        <Canvas.RenderTransform>
+                            <RotateTransform x:Name="Ring1Rotate2" CenterX="130" CenterY="130" />
+                        </Canvas.RenderTransform>
+                        <Ellipse
+                            Canvas.Left="126"
+                            Canvas.Top="-7"
+                            Width="14"
+                            Height="14">
+                            <Ellipse.Fill>
+                                <RadialGradientBrush>
+                                    <GradientStop Offset="0" Color="{DynamicResource C_AccentSoft}" />
+                                    <GradientStop Offset="1" Color="Transparent" />
+                                </RadialGradientBrush>
+                            </Ellipse.Fill>
+                            <Ellipse.Effect>
+                                <DropShadowEffect
+                                    BlurRadius="12"
+                                    Opacity="1"
+                                    ShadowDepth="0"
+                                    Color="{DynamicResource C_AccentSoft}" />
+                            </Ellipse.Effect>
+                        </Ellipse>
+                    </Canvas>
+
+                    <Ellipse
+                        Width="185"
+                        Height="185"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        StrokeThickness="1">
+                        <Ellipse.RenderTransform>
+                            <RotateTransform x:Name="Ring2Rotate" CenterX="92.5" CenterY="92.5" />
+                        </Ellipse.RenderTransform>
+                        <Ellipse.Stroke>
+                            <LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+                                <GradientStop Offset="0" Color="{DynamicResource C_AccentDark}" />
+                                <GradientStop Offset="0.4" Color="Transparent" />
+                                <GradientStop Offset="0.8" Color="{DynamicResource C_Accent1}" />
+                                <GradientStop Offset="1" Color="Transparent" />
+                            </LinearGradientBrush>
+                        </Ellipse.Stroke>
+                    </Ellipse>
+
+                    <Canvas
+                        Width="185"
+                        Height="185"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                        <Canvas.RenderTransform>
+                            <RotateTransform x:Name="Ring2Rotate2" CenterX="92.5" CenterY="92.5" />
+                        </Canvas.RenderTransform>
+                        <Ellipse
+                            Canvas.Left="89.5"
+                            Canvas.Top="-5"
+                            Width="10"
+                            Height="10">
+                            <Ellipse.Fill>
+                                <RadialGradientBrush>
+                                    <GradientStop Offset="0" Color="{DynamicResource C_AccentDark}" />
+                                    <GradientStop Offset="1" Color="Transparent" />
+                                </RadialGradientBrush>
+                            </Ellipse.Fill>
+                            <Ellipse.Effect>
+                                <DropShadowEffect
+                                    BlurRadius="10"
+                                    Opacity="1"
+                                    ShadowDepth="0"
+                                    Color="{DynamicResource C_AccentDark}" />
+                            </Ellipse.Effect>
+                        </Ellipse>
+                    </Canvas>
+
+                    <Ellipse
+                        Width="115"
+                        Height="115"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        StrokeThickness="2">
+                        <Ellipse.RenderTransform>
+                            <RotateTransform x:Name="Ring3Rotate" CenterX="57.5" CenterY="57.5" />
+                        </Ellipse.RenderTransform>
+                        <Ellipse.Stroke>
+                            <LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
+                                <GradientStop Offset="0" Color="{DynamicResource C_Accent1}" />
+                                <GradientStop Offset="0.35" Color="Transparent" />
+                                <GradientStop Offset="0.7" Color="{DynamicResource C_AccentSoft}" />
+                                <GradientStop Offset="1" Color="Transparent" />
+                            </LinearGradientBrush>
+                        </Ellipse.Stroke>
+                        <Ellipse.StrokeDashArray>
+                            <DoubleCollection>2 2</DoubleCollection>
+                        </Ellipse.StrokeDashArray>
+                    </Ellipse>
+
+                    <!--  Glow central  -->
+                    <Ellipse
+                        Width="100"
+                        Height="100"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                        <Ellipse.Fill>
+                            <RadialGradientBrush>
+                                <GradientStop Offset="0" Color="{DynamicResource C_Accent1}" />
+                                <GradientStop Offset="1" Color="Transparent" />
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
+
+                    <!--  Logo  -->
+                    <Border
+                        x:Name="CoreGlow"
+                        Width="80"
+                        Height="80"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        CornerRadius="0">
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="LogoScale" CenterX="40" CenterY="40" ScaleX="1" ScaleY="1" />
+                        </Border.RenderTransform>
+                        <Border.Background>
+                            <LinearGradientBrush x:Name="LogoBrush" StartPoint="0,0" EndPoint="1,1">
+                                <LinearGradientBrush.RelativeTransform>
+                                    <RotateTransform x:Name="LogoGradientRotate" CenterX="0.5" CenterY="0.5" />
+                                </LinearGradientBrush.RelativeTransform>
+                                <GradientStop Offset="0" Color="{DynamicResource C_Accent1}" />
+                                <GradientStop Offset="0.5" Color="{DynamicResource C_AccentDark}" />
+                                <GradientStop Offset="1" Color="{DynamicResource C_Accent2}" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.Effect>
+                            <DropShadowEffect
+                                BlurRadius="30"
+                                Opacity="0.9"
+                                ShadowDepth="0"
+                                Color="{DynamicResource C_Accent1}" />
+                        </Border.Effect>
+                        <Grid>
+                            <Border
+                                Margin="0,0,0,40"
+                                CornerRadius="0"
+                                Opacity="0.3">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Offset="0" Color="White" />
+                                        <GradientStop Offset="1" Color="Transparent" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontSize="38"
+                                FontWeight="Black"
+                                Foreground="{DynamicResource OnAccentText}"
+                                Text="M">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect
+                                        BlurRadius="8"
+                                        Opacity="0.4"
+                                        ShadowDepth="0"
+                                        Color="White" />
+                                </TextBlock.Effect>
+                            </TextBlock>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!--  Brand text  -->
+                <StackPanel
+                    x:Name="BrandText"
+                    Margin="0,0,0,52"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    Opacity="0">
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform x:Name="BrandTextTranslate" Y="20" />
+                    </StackPanel.RenderTransform>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        FontSize="36"
+                        FontWeight="Black"
+                        Text="Minark">
+                        <TextBlock.Foreground>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Offset="0" Color="{DynamicResource C_AccentSoft}" />
+                                <GradientStop Offset="0.5" Color="{DynamicResource C_Text1}" />
+                                <GradientStop Offset="1" Color="{DynamicResource C_AccentDark}" />
+                            </LinearGradientBrush>
+                        </TextBlock.Foreground>
+                        <TextBlock.Effect>
+                            <DropShadowEffect
+                                BlurRadius="20"
+                                Opacity="0.6"
+                                ShadowDepth="0"
+                                Color="{DynamicResource C_Accent1}" />
+                        </TextBlock.Effect>
+                    </TextBlock>
+                    <TextBlock
+                        Margin="0,6,0,0"
+                        HorizontalAlignment="Center"
+                        FontSize="13"
+                        FontStyle="Italic"
+                        Foreground="{DynamicResource Text3}"
+                        Text="Votre espace, vos règles." />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!--  ══ FORM PANEL ═════════════════════════════════════════════════════  -->
+        <Border
+            x:Name="FormPanel"
+            Grid.Column="1"
+            Background="{DynamicResource Surface1}"
+            BorderBrush="{DynamicResource Border1}"
+            BorderThickness="1,0,0,0"
+            Opacity="0">
+            <Border.RenderTransform>
+                <TranslateTransform x:Name="FormTranslate" X="80" />
+            </Border.RenderTransform>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="36,32" VerticalAlignment="Center">
+
+                    <TextBlock
+                        Margin="0,0,0,4"
+                        FontSize="24"
+                        FontWeight="Bold"
+                        Foreground="{DynamicResource Text1}"
+                        Text="Connexion" />
+                    <TextBlock
+                        Margin="0,0,0,24"
+                        FontSize="13"
+                        Foreground="{DynamicResource Text2}"
+                        Text="Content de vous revoir !" />
+
+                    <ui:InfoBar
+                        Title="{Binding ErrorMessage, Mode=OneWay}"
+                        Margin="0,0,0,16"
+                        IsClosable="False"
+                        IsOpen="{Binding HasError, Mode=OneWay}"
+                        Severity="Error" />
+
+                    <!--  Field 1 : Username  -->
+                    <StackPanel x:Name="Field1" Opacity="0">
+                        <StackPanel.RenderTransform>
+                            <TranslateTransform x:Name="Field1Translate" Y="12" />
+                        </StackPanel.RenderTransform>
+                        <TextBlock
+                            Margin="0,0,0,6"
+                            Style="{StaticResource FieldLabel}"
+                            Text="Nom d'utilisateur" />
+                        <ComboBox
+                            Margin="0,0,0,14"
+                            HorizontalAlignment="Stretch"
+                            ui:ControlHelper.PlaceholderText="Entrez votre nom"
+                            IsEditable="True"
+                            IsTextSearchEnabled="True"
+                            ItemsSource="{Binding SavedUsernames}"
+                            Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+
+                    <!--  Field 2 : Password  -->
+                    <StackPanel x:Name="Field2" Opacity="0">
+                        <StackPanel.RenderTransform>
+                            <TranslateTransform x:Name="Field2Translate" Y="12" />
+                        </StackPanel.RenderTransform>
+                        <TextBlock
+                            Margin="0,0,0,6"
+                            Style="{StaticResource FieldLabel}"
+                            Text="Mot de passe" />
+                        <PasswordBox
+                            x:Name="PasswordBox"
+                            Margin="0,0,0,10"
+                            beh:PasswordBoxBehavior.BoundPassword="{Binding Password, Mode=TwoWay}" />
+                    </StackPanel>
+
+                    <!--  Field 3 : Remember me  -->
+                    <StackPanel x:Name="Field3" Opacity="0">
+                        <StackPanel.RenderTransform>
+                            <TranslateTransform x:Name="Field3Translate" Y="12" />
+                        </StackPanel.RenderTransform>
+                        <CheckBox
+                            Margin="0,0,0,24"
+                            Content="Se souvenir de moi"
+                            IsChecked="{Binding RememberMe}" />
+                    </StackPanel>
+
+                    <ProgressBar
+                        Height="2"
+                        Margin="0,0,0,12"
+                        IsIndeterminate="True"
+                        Visibility="{Binding IsLoading, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
+
+                    <!--  Field 4 : Button  -->
+                    <StackPanel x:Name="Field4" Opacity="0">
+                        <StackPanel.RenderTransform>
+                            <TranslateTransform x:Name="Field4Translate" Y="12" />
+                        </StackPanel.RenderTransform>
+                        <Button
+                            Height="40"
+                            HorizontalAlignment="Stretch"
+                            Command="{Binding LoginCommand}"
+                            Content="Se connecter"
+                            Style="{StaticResource AccentBtn}" />
+                    </StackPanel>
+
+                    <Separator Margin="0,24" />
+
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="12"
+                            Foreground="{DynamicResource Text2}"
+                            Text="Pas de compte ? " />
+                        <ui:HyperlinkButton Command="{Binding GoToRegisterCommand}" Content="S'inscrire" />
+                    </StackPanel>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>
