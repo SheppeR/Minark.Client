@@ -49,6 +49,10 @@ try
     builder.Services.AddSingleton<IServerSender, ServerSender>();
     builder.Services.AddSingleton<PacketDispatcher>();
 
+    // ── Client HTTP vers Minark.Server ────────────────────────────────────────
+    // Singleton : HttpClient est thread-safe et doit être réutilisé.
+    builder.Services.AddSingleton<MinarServerStatusClient>();
+
     // ── Handlers (auto-enregistrement via Scrutor) ────────────────────────────
     builder.Services.Scan(scan => scan
         .FromAssemblyOf<AuthHandler>()
@@ -60,10 +64,8 @@ try
     // ── Orchestrateur de démarrage ────────────────────────────────────────────
     builder.Services.AddSingleton<ServerReadySignal>();
 
-    // Étapes enregistrées en tant que IStartupStep
     builder.Services.AddSingleton<IStartupStep, DatabaseStartupStep>();
     builder.Services.AddSingleton<IStartupStep, NetworkStartupStep>();
-    // ↑ Pour ajouter une étape future : implémenter IStartupStep et l'enregistrer ici.
 
     // L'orchestrateur doit être le PREMIER hosted service
     builder.Services.AddHostedService<ServerOrchestrator>();

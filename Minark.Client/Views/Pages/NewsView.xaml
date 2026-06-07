@@ -44,7 +44,8 @@
                 </StackPanel>
 
                 <!--  Articles list  -->
-                <ItemsControl ItemsSource="{Binding Articles}" Visibility="{Binding IsInitialLoading, Converter={StaticResource BoolToVisNot}}">
+                <ItemsControl ItemsSource="{Binding Articles}"
+                              Visibility="{Binding IsInitialLoading, Converter={StaticResource BoolToVisNot}}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="{x:Type viewModels:NewsArticleViewModel}">
                             <Border

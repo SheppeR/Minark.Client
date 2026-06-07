@@ -2,7 +2,7 @@ namespace Minark.Server.Startup;
 
 /// <summary>
 ///     Représente une étape de démarrage ordonnée du serveur.
-///     Chaque étape est exécutée séquentiellement par le <see cref="ServerOrchestrator"/>.
+///     Chaque étape est exécutée séquentiellement par le <see cref="ServerOrchestrator" />.
 /// </summary>
 public interface IStartupStep
 {
@@ -10,7 +10,7 @@ public interface IStartupStep
     string Name { get; }
 
     /// <summary>
-    ///     Ordre d'exécution (croissant). Utiliser les constantes de <see cref="StartupOrder"/>.
+    ///     Ordre d'exécution (croissant). Utiliser les constantes de <see cref="StartupOrder" />.
     /// </summary>
     int Order { get; }
 
@@ -23,7 +23,8 @@ public interface IStartupStep
 public static class StartupOrder
 {
     public const int Database = 10;
-    public const int Network  = 20;
+    public const int Network = 20;
+
     public const int Services = 30;
     // Réservez 40, 50… pour de futures étapes
 }

@@ -18,6 +18,7 @@ public static class UserStatusHelper
                 UserStatus.Online => "En ligne",
                 UserStatus.Away => "Absent",
                 UserStatus.Busy => "Occupé",
+                UserStatus.InGame => "En jeu",
                 _ => "Hors ligne"
             };
         }
@@ -30,6 +31,7 @@ public static class UserStatusHelper
                 UserStatus.Online => "#FF57CBB5",
                 UserStatus.Away => "#FFFFC107",
                 UserStatus.Busy => "#FFFF5252",
+                UserStatus.InGame => "#FF7B68EE",
                 _ => "#FF8F98A0"
             };
         }

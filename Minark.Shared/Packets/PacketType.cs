@@ -34,6 +34,7 @@ public enum PacketType
 
     // Status
     StatusUpdateRequest, // client → serveur : changer son propre statut
+    SelfStatusUpdate, // serveur → client : le serveur notifie le client de son propre statut (ex: InGame via GameServer)
 
     // Chat
     ChatSend,

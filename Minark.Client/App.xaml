@@ -60,7 +60,8 @@
             <SolidColorBrush x:Key="TextControlPlaceholderForegroundFocused" Color="{DynamicResource C_Text3}" />
 
             <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillChecked" Color="{DynamicResource C_Accent1}" />
-            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" Color="{DynamicResource C_AccentLight}" />
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver"
+                             Color="{DynamicResource C_AccentLight}" />
             <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPressed" Color="{DynamicResource C_AccentDark}" />
             <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeChecked" Color="{DynamicResource C_Accent1}" />
 
@@ -87,8 +88,10 @@
 
             <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFill" Color="{DynamicResource C_Accent1}" />
             <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedStroke" Color="{DynamicResource C_Accent1}" />
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillPointerOver" Color="{DynamicResource C_AccentLight}" />
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedStrokePointerOver" Color="{DynamicResource C_AccentLight}" />
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillPointerOver"
+                             Color="{DynamicResource C_AccentLight}" />
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedStrokePointerOver"
+                             Color="{DynamicResource C_AccentLight}" />
 
             <SolidColorBrush x:Key="ProgressBarForeground" Color="{DynamicResource C_Accent1}" />
             <SolidColorBrush x:Key="ProgressRingForeground" Color="{DynamicResource C_Accent1}" />

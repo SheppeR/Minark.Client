@@ -10,6 +10,7 @@ public class AuthHandler(
     IDbContextFactory<GameDbContext> dbFactory,
     PlayerRegistry registry,
     IServerSender sender,
+    MinarServerStatusClient statusClient,
     ILogger<AuthHandler> log) : IPacketHandler
 {
     public GamePacketType PacketType => GamePacketType.AuthRequest;
@@ -63,13 +64,15 @@ public class AuthHandler(
             UserId = session.UserId,
             Username = session.User.Username,
             AvatarUrl = session.User.AvatarUrl,
+            Token = req.Token,
+            PreviousStatusInt = session.User.Status, // ← int brut depuis la DB
             Peer = peer,
             FriendIds = friendIds
         };
 
         registry.TryAdd(player);
-        log.LogInformation("Joueur connecté : {Username} (id={UserId}, peer={PeerId})",
-            player.Username, player.UserId, peer.Id);
+        log.LogInformation("Joueur connecté : {Username} (id={UserId}, peer={PeerId}, previousStatus={PreviousStatus})",
+            player.Username, player.UserId, peer.Id, player.PreviousStatusInt);
 
         // ── Réponse auth OK ───────────────────────────────────────────────────
         sender.Send(peer, GamePacketType.AuthResponse, new AuthResponse
@@ -84,16 +87,18 @@ public class AuthHandler(
             }
         });
 
-        // ── Notifier les amis connectés ───────────────────────────────────────
+        // ── Notifier les amis connectés au GameServer (UDP) ───────────────────
         var statusUpdate = new FriendStatusUpdate
         {
             FriendId = player.UserId,
             Status = GameUserStatus.InGame
         };
-
         foreach (var friend in registry.FriendsOf(player))
         {
             sender.Send(friend.Peer, GamePacketType.FriendStatusUpdate, statusUpdate);
         }
+
+        // ── Notifier le Minark.Server (HTTP) → amis connectés au launcher ─────
+        _ = statusClient.SetInGameAsync(req.Token);
     }
 }

@@ -5,5 +5,6 @@ public enum UserStatus
     Offline,
     Online,
     Away,
-    Busy
+    Busy,
+    InGame // ← Joueur connecté au GameServer
 }

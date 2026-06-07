@@ -6,17 +6,17 @@ namespace Minark.Server.Startup;
 
 /// <summary>
 ///     Orchestrateur de démarrage du serveur.
-///     Exécute chaque <see cref="IStartupStep"/> dans l'ordre croissant de leur
-///     propriété <see cref="IStartupStep.Order"/>, puis lève <see cref="ServerReadySignal"/>
-///     pour débloquer les services dépendants (ex : <see cref="MessagePurgeService"/>).
+///     Exécute chaque <see cref="IStartupStep" /> dans l'ordre croissant de leur
+///     propriété <see cref="IStartupStep.Order" />, puis lève <see cref="ServerReadySignal" />
+///     pour débloquer les services dépendants (ex : <see cref="MessagePurgeService" />).
 /// </summary>
 /// <remarks>
 ///     Doit être le PREMIER <c>IHostedService</c> enregistré dans <c>Program.cs</c>.
 /// </remarks>
 public class ServerOrchestrator(
     IEnumerable<IStartupStep> steps,
-    ServerReadySignal          readySignal,
-    Stopwatch                  sw,
+    ServerReadySignal readySignal,
+    Stopwatch sw,
     ILogger<ServerOrchestrator> log) : IHostedService
 {
     private NetworkStartupStep? _networkStep;
@@ -44,7 +44,9 @@ public class ServerOrchestrator(
 
             // Garder une référence au NetworkStep pour l'arrêt propre
             if (step is NetworkStartupStep ns)
+            {
                 _networkStep = ns;
+            }
         }
 
         SerilogUtils.PrintSection("SERVER READY");
@@ -63,6 +65,8 @@ public class ServerOrchestrator(
     {
         SerilogUtils.PrintSection("SERVER STOPPING");
         if (_networkStep is not null)
+        {
             await _networkStep.StopAsync(ct);
+        }
     }
 }

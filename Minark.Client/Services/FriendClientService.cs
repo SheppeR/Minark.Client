@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Minark.Client.Helpers;
 using Minark.Client.Networking;
 using Minark.Client.Services.Interfaces;
 using Minark.Shared.Packets;
@@ -12,13 +13,23 @@ public class FriendClientService : IFriendClientService
     private readonly ConcurrentQueue<TaskCompletionSource<AckResponse>> _requestQueue = new();
     private readonly TcpClientService _tcp;
 
-    public FriendClientService(TcpClientService tcp, PacketDispatcher dispatcher)
+    public FriendClientService(TcpClientService tcp, PacketDispatcher dispatcher, UserStatusService userStatusService)
     {
         _tcp = tcp;
 
         dispatcher.Register(PacketType.FriendListChanged, p => Notify(p, ref OnFriendListChanged));
         dispatcher.Register(PacketType.FriendInviteReceived, p => Notify(p, ref OnInviteReceived));
         dispatcher.Register(PacketType.FriendStatusUpdate, p => Notify(p, ref OnFriendStatusChanged));
+
+        // Mis à jour du propre statut du client (déclenché par le GameServer via HTTP)
+        dispatcher.Register(PacketType.SelfStatusUpdate, payload =>
+        {
+            var update = PacketSerializer.DeserializePayload<SelfStatusUpdate>(payload);
+            if (update is not null)
+            {
+                UiThread.Invoke(() => userStatusService.Status = update.Status);
+            }
+        });
 
         dispatcher.Register(PacketType.FriendListResponse, payload =>
         {

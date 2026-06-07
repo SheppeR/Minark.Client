@@ -182,7 +182,8 @@
                     Visibility="{Binding HasCarousel, Converter={StaticResource BoolToVisNot}}" />
 
                 <!--  Content blocks  -->
-                <ItemsControl ItemTemplateSelector="{StaticResource BlockSelector}" ItemsSource="{Binding ContentBlocks}" />
+                <ItemsControl ItemTemplateSelector="{StaticResource BlockSelector}"
+                              ItemsSource="{Binding ContentBlocks}" />
 
                 <!--  Reactions  -->
                 <Border
@@ -365,7 +366,9 @@
                                                 CornerRadius="0"
                                                 Visibility="{Binding AvatarUrl, Converter={StaticResource StringToVis}}">
                                                 <Border.Background>
-                                                    <ImageBrush ImageSource="{Binding AvatarUrl, Converter={StaticResource UrlToImage}}" Stretch="UniformToFill" />
+                                                    <ImageBrush
+                                                        ImageSource="{Binding AvatarUrl, Converter={StaticResource UrlToImage}}"
+                                                        Stretch="UniformToFill" />
                                                 </Border.Background>
                                             </Border>
                                         </Grid>
@@ -391,7 +394,8 @@
                                                     Text="{Binding PostedAt, StringFormat='{}{0:dd MMM yyyy à HH:mm}'}" />
                                             </StackPanel>
 
-                                            <ItemsControl ItemsSource="{Binding Content, Converter={StaticResource ContentToBlocks}}">
+                                            <ItemsControl
+                                                ItemsSource="{Binding Content, Converter={StaticResource ContentToBlocks}}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
                                                         <TextBlock

@@ -11,8 +11,8 @@ public class DatabaseStartupStep(
     IServiceScopeFactory scopeFactory,
     ILogger<DatabaseStartupStep> log) : IStartupStep
 {
-    public string Name  => "Database";
-    public int    Order => StartupOrder.Database;
+    public string Name => "Database";
+    public int Order => StartupOrder.Database;
 
     public async Task ExecuteAsync(CancellationToken ct)
     {

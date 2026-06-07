@@ -9,7 +9,6 @@ namespace Minark.GameServer.Startup;
 /// <summary>
 ///     Étape 2 — Réseau LiteNetLib.
 ///     Enregistre les événements et bind le port UDP.
-///     (Extrait de <c>LiteNetHostedService</c> pour contrôler l'ordre.)
 /// </summary>
 public class NetworkStartupStep(
     NetManager netManager,
@@ -17,6 +16,7 @@ public class NetworkStartupStep(
     PacketDispatcher dispatcher,
     PlayerRegistry registry,
     IServerSender sender,
+    MinarServerStatusClient statusClient,
     GameServerOptions opts,
     ILogger<NetworkStartupStep> log) : IStartupStep
 {
@@ -50,9 +50,10 @@ public class NetworkStartupStep(
                 return;
             }
 
-            log.LogInformation("Joueur déconnecté : {Username} (reason={Reason})",
-                player.Username, info.Reason);
+            log.LogInformation("Joueur déconnecté : {Username} (reason={Reason}, restoringStatus={Status})",
+                player.Username, info.Reason, player.PreviousStatusInt);
 
+            // ── Notifier les amis connectés au GameServer (UDP) ───────────────
             var statusUpdate = new FriendStatusUpdate
             {
                 FriendId = player.UserId,
@@ -62,6 +63,9 @@ public class NetworkStartupStep(
             {
                 sender.Send(friend.Peer, GamePacketType.FriendStatusUpdate, statusUpdate);
             }
+
+            // ── Restaurer le statut précédent via Minark.Server (HTTP) ────────
+            _ = statusClient.RestoreStatusAsync(player.Token, player.PreviousStatusInt);
         };
 
         listener.NetworkReceiveEvent += async (peer, reader, channel, delivery) =>

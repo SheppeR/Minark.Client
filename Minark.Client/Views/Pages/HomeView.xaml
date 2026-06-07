@@ -101,9 +101,13 @@
                                 Data="M 0,250 L 0,162 L 60,110 L 120,145 L 190,98 L 260,130 L 330,90 L 400,122 L 460,95 L 530,128 L 590,102 L 650,130 L 720,108 L 790,135 L 860,115 L 950,250 Z"
                                 Fill="{DynamicResource MountainFarBrush}"
                                 Opacity="0.95" />
-                            <Path Data="M 0,250 L 0,178 L 50,138 L 110,162 L 175,118 L 235,148 L 300,108 L 355,140 L 420,112 L 480,145 L 545,120 L 605,148 L 665,128 L 730,155 L 800,130 L 870,158 L 950,250 Z" Fill="{DynamicResource MountainMidBrush}" />
-                            <Path Data="M 0,250 L 0,192 L 60,168 L 100,178 L 130,162 L 160,250 Z" Fill="{DynamicResource MountainNearBrush}" />
-                            <Path Data="M 950,250 L 950,188 L 900,165 L 862,176 L 830,158 L 800,250 Z" Fill="{DynamicResource MountainNearBrush}" />
+                            <Path
+                                Data="M 0,250 L 0,178 L 50,138 L 110,162 L 175,118 L 235,148 L 300,108 L 355,140 L 420,112 L 480,145 L 545,120 L 605,148 L 665,128 L 730,155 L 800,130 L 870,158 L 950,250 Z"
+                                Fill="{DynamicResource MountainMidBrush}" />
+                            <Path Data="M 0,250 L 0,192 L 60,168 L 100,178 L 130,162 L 160,250 Z"
+                                  Fill="{DynamicResource MountainNearBrush}" />
+                            <Path Data="M 950,250 L 950,188 L 900,165 L 862,176 L 830,158 L 800,250 Z"
+                                  Fill="{DynamicResource MountainNearBrush}" />
                             <Ellipse
                                 Canvas.Left="608"
                                 Canvas.Top="60"
@@ -341,7 +345,8 @@
                                             CornerRadius="0"
                                             Cursor="Hand">
                                             <Border.BorderBrush>
-                                                <SolidColorBrush Color="{Binding Status, Converter={StaticResource StatusToColor}}" />
+                                                <SolidColorBrush
+                                                    Color="{Binding Status, Converter={StaticResource StatusToColor}}" />
                                             </Border.BorderBrush>
                                             <Border.BorderThickness>0,2,0,0</Border.BorderThickness>
                                             <StackPanel>
@@ -362,8 +367,10 @@
                                                             Visibility="{Binding AvatarUrl, Converter={StaticResource StringToVis}, ConverterParameter=inverse}">
                                                             <Border.Background>
                                                                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                                    <GradientStop Offset="0" Color="{DynamicResource C_Accent1}" />
-                                                                    <GradientStop Offset="1" Color="{DynamicResource C_AccentDark}" />
+                                                                    <GradientStop Offset="0"
+                                                                            Color="{DynamicResource C_Accent1}" />
+                                                                    <GradientStop Offset="1"
+                                                                            Color="{DynamicResource C_AccentDark}" />
                                                                 </LinearGradientBrush>
                                                             </Border.Background>
                                                             <TextBlock
@@ -380,7 +387,9 @@
                                                             CornerRadius="0"
                                                             Visibility="{Binding AvatarUrl, Converter={StaticResource StringToVis}}">
                                                             <Border.Background>
-                                                                <ImageBrush ImageSource="{Binding AvatarUrl, Converter={StaticResource UrlToImage}}" Stretch="UniformToFill" />
+                                                                <ImageBrush
+                                                                    ImageSource="{Binding AvatarUrl, Converter={StaticResource UrlToImage}}"
+                                                                    Stretch="UniformToFill" />
                                                             </Border.Background>
                                                         </Border>
                                                         <Ellipse
@@ -391,7 +400,8 @@
                                                             Stroke="{DynamicResource Surface3}"
                                                             StrokeThickness="2.5">
                                                             <Ellipse.Fill>
-                                                                <SolidColorBrush Color="{Binding Status, Converter={StaticResource StatusToColor}}" />
+                                                                <SolidColorBrush
+                                                                    Color="{Binding Status, Converter={StaticResource StatusToColor}}" />
                                                             </Ellipse.Fill>
                                                         </Ellipse>
                                                     </Grid>
@@ -453,7 +463,8 @@
                                                             Margin="0,0,6,0"
                                                             VerticalAlignment="Center">
                                                             <Ellipse.Fill>
-                                                                <SolidColorBrush Color="{Binding Status, Converter={StaticResource StatusToColor}}" />
+                                                                <SolidColorBrush
+                                                                    Color="{Binding Status, Converter={StaticResource StatusToColor}}" />
                                                             </Ellipse.Fill>
                                                         </Ellipse>
                                                         <TextBlock
@@ -508,7 +519,8 @@
                 </Grid>
 
                 <!--  Loading  -->
-                <StackPanel Margin="32,12,32,0" Visibility="{Binding IsInitialLoading, Converter={StaticResource BoolToVis}}">
+                <StackPanel Margin="32,12,32,0"
+                            Visibility="{Binding IsInitialLoading, Converter={StaticResource BoolToVis}}">
                     <ui:ProgressRing
                         Width="28"
                         Height="28"

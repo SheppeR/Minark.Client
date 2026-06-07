@@ -1,3 +1,9 @@
+using System.Drawing;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using H.NotifyIcon;
 using iNKORE.UI.WPF.Modern;
 using Microsoft.Extensions.Configuration;
@@ -12,11 +18,10 @@ using Minark.Client.Views.Windows;
 using Minark.Shared;
 using ReactiveUI.Builder;
 using Serilog;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
+using Brush = System.Windows.Media.Brush;
+using Brushes = System.Windows.Media.Brushes;
+using Color = System.Windows.Media.Color;
+using FontFamily = System.Windows.Media.FontFamily;
 
 namespace Minark.Client;
 
@@ -252,23 +257,29 @@ public partial class App
 
     // ── Tray icon ─────────────────────────────────────────────────────────────
 
-    private static System.Drawing.Icon LoadTrayIcon()
+    private static Icon LoadTrayIcon()
     {
         var path = Path.Combine(AppContext.BaseDirectory, "minark.ico");
         if (!File.Exists(path))
+        {
             throw new FileNotFoundException($"minark.ico introuvable dans {AppContext.BaseDirectory}", path);
-        return new System.Drawing.Icon(path);
+        }
+
+        return new Icon(path);
     }
 
     /// <summary>Crée une icône Segoe MDL2 Assets pour un MenuItem du tray.</summary>
-    private static TextBlock TrayMenuIcon(string glyph, Brush? foreground = null) => new()
+    private static TextBlock TrayMenuIcon(string glyph, Brush? foreground = null)
     {
-        Text = glyph,
-        FontFamily = new FontFamily("Segoe MDL2 Assets"),
-        FontSize = 14,
-        VerticalAlignment = VerticalAlignment.Center,
-        Foreground = foreground ?? new SolidColorBrush(Color.FromRgb(0x7C, 0x3A, 0xED))
-    };
+        return new TextBlock
+        {
+            Text = glyph,
+            FontFamily = new FontFamily("Segoe MDL2 Assets"),
+            FontSize = 14,
+            VerticalAlignment = VerticalAlignment.Center,
+            Foreground = foreground ?? new SolidColorBrush(Color.FromRgb(0x7C, 0x3A, 0xED))
+        };
+    }
 
     private TaskbarIcon CreateTrayIcon()
     {
@@ -276,7 +287,7 @@ public partial class App
         {
             Header = "Ouvrir Minark",
             FontWeight = FontWeights.Bold,
-            Icon = TrayMenuIcon("\uE737"),   // Home
+            Icon = TrayMenuIcon("\uE737"), // Home
             Visibility = Visibility.Collapsed
         };
         menuOpen.Click += TrayMenu_ShowMain;
@@ -284,7 +295,7 @@ public partial class App
         var menuFriends = new MenuItem
         {
             Header = "Amis",
-            Icon = TrayMenuIcon("\uE716"),   // People
+            Icon = TrayMenuIcon("\uE716"), // People
             Visibility = Visibility.Collapsed
         };
         menuFriends.Click += TrayMenu_ShowFriends;
@@ -295,30 +306,41 @@ public partial class App
         {
             Header = "Quitter",
             Foreground = Brushes.IndianRed,
-            Icon = TrayMenuIcon("\uE7E8", Brushes.IndianRed)  // ChromeClose
+            Icon = TrayMenuIcon("\uE7E8", Brushes.IndianRed) // ChromeClose
         };
         menuQuit.Click += TrayMenu_Quit;
 
         // Afficher les items connectés dès le login, les masquer à la déconnexion
         var auth = _host!.Services.GetRequiredService<IAuthClientService>();
-        void ShowLoggedIn() => Dispatcher.Invoke(() =>
+
+        void ShowLoggedIn()
         {
-            menuOpen.Visibility = Visibility.Visible;
-            menuFriends.Visibility = Visibility.Visible;
-            menuSep.Visibility = Visibility.Visible;
-        });
-        void HideLoggedOut() => Dispatcher.Invoke(() =>
+            Dispatcher.Invoke(() =>
+            {
+                menuOpen.Visibility = Visibility.Visible;
+                menuFriends.Visibility = Visibility.Visible;
+                menuSep.Visibility = Visibility.Visible;
+            });
+        }
+
+        void HideLoggedOut()
         {
-            menuOpen.Visibility = Visibility.Collapsed;
-            menuFriends.Visibility = Visibility.Collapsed;
-            menuSep.Visibility = Visibility.Collapsed;
-        });
+            Dispatcher.Invoke(() =>
+            {
+                menuOpen.Visibility = Visibility.Collapsed;
+                menuFriends.Visibility = Visibility.Collapsed;
+                menuSep.Visibility = Visibility.Collapsed;
+            });
+        }
 
         auth.LoggedIn += _ => ShowLoggedIn();
         auth.SessionInvalidated += _ => HideLoggedOut();
 
         // Si déjà connecté (reconnexion automatique), afficher immédiatement
-        if (auth.IsLoggedIn) ShowLoggedIn();
+        if (auth.IsLoggedIn)
+        {
+            ShowLoggedIn();
+        }
 
         var menu = new ContextMenu();
         menu.Items.Add(menuOpen);

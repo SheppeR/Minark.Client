@@ -5,17 +5,17 @@ namespace Minark.Server.Infrastructure;
 
 /// <summary>
 ///     Purge périodique des anciens messages de chat.
-///     Attend <see cref="ServerReadySignal"/> avant de démarrer (DB garantie initialisée).
+///     Attend <see cref="ServerReadySignal" /> avant de démarrer (DB garantie initialisée).
 /// </summary>
 public class MessagePurgeService(
     IServiceScopeFactory scopeFactory,
-    ServerReadySignal     readySignal,
+    ServerReadySignal readySignal,
     ILogger<MessagePurgeService> logger,
-    IConfiguration       config)
+    IConfiguration config)
     : BackgroundService
 {
-    private readonly TimeSpan _interval    = TimeSpan.FromHours(config.GetValue("MessagePurge:IntervalHours", 1));
-    private readonly int      _retentionDays = config.GetValue("MessagePurge:RetentionDays", 30);
+    private readonly TimeSpan _interval = TimeSpan.FromHours(config.GetValue("MessagePurge:IntervalHours", 1));
+    private readonly int _retentionDays = config.GetValue("MessagePurge:RetentionDays", 30);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

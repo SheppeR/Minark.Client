@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Minark.Server.Data;
+using Minark.Server.Http;
 using Minark.Server.Infrastructure;
 using Minark.Server.Networking;
 using Minark.Server.Networking.Handlers.Chat;
@@ -98,6 +99,10 @@ try
 
     // ── Services hébergés (démarrent après l'orchestrateur via ServerReadySignal) ──
     builder.Services.AddHostedService<MessagePurgeService>();
+
+    // ── HTTP interne (GameServer → Server) ────────────────────────────────────
+    // Écoute uniquement sur 127.0.0.1 — jamais exposé à l'extérieur.
+    builder.Services.AddHostedService<InternalHttpService>();
 
     var app = builder.Build();
     await app.RunAsync();
