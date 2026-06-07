@@ -1,3 +1,5 @@
+using Minark.Server.Infrastructure;
+
 namespace Minark.Server.Startup;
 
 /// <summary>

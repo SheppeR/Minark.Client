@@ -1,5 +1,4 @@
 using Minark.Server.Infrastructure;
-using Minark.Server.Startup;
 using Minark.Shared;
 
 namespace Minark.Server.Startup;
