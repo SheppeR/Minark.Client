@@ -1,10 +1,11 @@
-using System.Collections.ObjectModel;
-using System.Reactive;
-using System.Windows.Input;
+using Minark.Client.Helpers;
 using Minark.Client.Services.Interfaces;
 using Minark.Client.ViewModels.Pages;
 using Minark.Shared.Packets;
 using ReactiveUI;
+using System.Collections.ObjectModel;
+using System.Reactive;
+using System.Windows.Input;
 
 namespace Minark.Client.ViewModels;
 
@@ -52,6 +53,19 @@ public class HomeDashboardViewModel : ReactiveObject
                 shell.NavigateCommand.Execute("Downloads").Subscribe();
             }
         });
+
+        // Propagate friend collection changes to this VM so HomeView bindings
+        // (HasOnlineFriends, OnlineFriends) stay in sync when push updates arrive
+        // after the initial load (e.g. a friend connects while the Dashboard is open).
+        friends.OnlineFriends
+            .WhenCollectionChanged()
+            .Subscribe(_ => this.RaisePropertyChanged(nameof(HasOnlineFriends)));
+
+        // Also forward property-change notifications from FriendsViewModel so that
+        // any computed bool the XAML binds to (e.g. HasOnlineFriends toggling a
+        // Visibility converter) reflects the live state.
+        friends.WhenAnyValue(x => x.HasOnlineFriends)
+            .Subscribe(_ => this.RaisePropertyChanged(nameof(HasOnlineFriends)));
     }
 
     // ── Shell ─────────────────────────────────────────────────────────────
