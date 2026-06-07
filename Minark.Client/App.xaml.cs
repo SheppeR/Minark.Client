@@ -237,6 +237,16 @@ public partial class App
 
         var notifSvc = _host!.Services.GetRequiredService<NotificationService>();
         notifSvc.ShowTrayBalloon = (title, message) => _trayIcon.TrayIcon.ShowNotification(title, message);
+
+        // H.NotifyIcon requires explicit disposal before the process exits to remove
+        // the tray icon from the shell notification area. The Exit event fires
+        // synchronously during Shutdown(), before the process terminates, making it
+        // the most reliable hook — OnExit() is async and may not complete in time.
+        Exit += (_, _) =>
+        {
+            _trayIcon?.Dispose();
+            _trayIcon = null;
+        };
     }
 
     // ── Tray icon ─────────────────────────────────────────────────────────────

@@ -67,7 +67,6 @@ public static class ContextMenuButtonBehavior
             return;
         }
 
-        menu.DataContext ??= btn.DataContext;
         menu.PlacementTarget = btn;
         menu.Placement = GetPlacement(btn);
         menu.IsOpen = true;

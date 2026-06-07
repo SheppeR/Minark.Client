@@ -5,6 +5,8 @@ using Minark.Shared.Packets;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Minark.Client.ViewModels;
@@ -42,6 +44,12 @@ public class HomeDashboardViewModel : ReactiveObject
         OpenContactMenuCommand = ReactiveCommand.Create<FriendItemViewModel>(_ => { });
         OpenFriendsWindowCommand = ReactiveCommand.Create(() => OpenFriendsWindowRequested?.Invoke());
 
+        // Delegate friend-item commands to FriendsViewModel — HomeView menu items
+        // receive a FriendItemViewModel and must unwrap the inner FriendDto.
+        OpenChatCommand = ReactiveCommand.Create<FriendItemViewModel>(item => friends.OpenChatCommand.Execute(item.Dto).Subscribe());
+        BlockFriendCommand = ReactiveCommand.CreateFromTask<FriendItemViewModel>(item => friends.BlockFriendCommand.Execute(item.Dto).FirstAsync().ToTask());
+        RemoveFriendCommand = ReactiveCommand.CreateFromTask<FriendItemViewModel>(item => friends.RemoveFriendCommand.Execute(item.Dto).FirstAsync().ToTask());
+
         LaunchGameCommand = ReactiveCommand.CreateFromTask(async () =>
         {
             if (updater.InstalledVersion is not null)
@@ -54,16 +62,12 @@ public class HomeDashboardViewModel : ReactiveObject
             }
         });
 
-        // Propagate friend collection changes to this VM so HomeView bindings
-        // (HasOnlineFriends, OnlineFriends) stay in sync when push updates arrive
-        // after the initial load (e.g. a friend connects while the Dashboard is open).
+        // Propagate friend collection changes so HomeView bindings (HasOnlineFriends,
+        // OnlineFriends) stay in sync when push updates arrive after the initial load.
         friends.OnlineFriends
             .WhenCollectionChanged()
             .Subscribe(_ => this.RaisePropertyChanged(nameof(HasOnlineFriends)));
 
-        // Also forward property-change notifications from FriendsViewModel so that
-        // any computed bool the XAML binds to (e.g. HasOnlineFriends toggling a
-        // Visibility converter) reflects the live state.
         friends.WhenAnyValue(x => x.HasOnlineFriends)
             .Subscribe(_ => this.RaisePropertyChanged(nameof(HasOnlineFriends)));
     }
@@ -88,6 +92,9 @@ public class HomeDashboardViewModel : ReactiveObject
     public string LaunchGameLabel => _updater.InstalledVersion is not null ? "Jouer" : "Télécharger";
 
     public ReactiveCommand<FriendItemViewModel, Unit> OpenContactMenuCommand { get; }
+    public ReactiveCommand<FriendItemViewModel, Unit> OpenChatCommand { get; }
+    public ReactiveCommand<FriendItemViewModel, Unit> BlockFriendCommand { get; }
+    public ReactiveCommand<FriendItemViewModel, Unit> RemoveFriendCommand { get; }
     public ReactiveCommand<NewsArticleViewModel, Unit> OpenArticleCommand { get; }
     public ReactiveCommand<string, Unit> NavigateToSectionCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenFriendsWindowCommand { get; }
