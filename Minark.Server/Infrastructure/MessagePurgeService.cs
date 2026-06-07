@@ -1,28 +1,32 @@
 using Minark.Server.Services.Interfaces;
+using Minark.Server.Startup;
 
 namespace Minark.Server.Infrastructure;
 
 /// <summary>
 ///     Purge périodique des anciens messages de chat.
-///     Avant : appelé une seule fois au démarrage — les messages s'accumulaient entre redémarrages.
-///     Après : PeriodicTimer qui tourne toutes les N heures (configurable via appsettings.json).
+///     Attend <see cref="ServerReadySignal"/> avant de démarrer (DB garantie initialisée).
 /// </summary>
 public class MessagePurgeService(
     IServiceScopeFactory scopeFactory,
+    ServerReadySignal     readySignal,
     ILogger<MessagePurgeService> logger,
-    IConfiguration config)
+    IConfiguration       config)
     : BackgroundService
 {
-    private readonly TimeSpan _interval = TimeSpan.FromHours(config.GetValue("MessagePurge:IntervalHours", 1));
-    private readonly int _retentionDays = config.GetValue("MessagePurge:RetentionDays", 30);
+    private readonly TimeSpan _interval    = TimeSpan.FromHours(config.GetValue("MessagePurge:IntervalHours", 1));
+    private readonly int      _retentionDays = config.GetValue("MessagePurge:RetentionDays", 30);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        // Attendre que la DB et le réseau soient prêts
+        await readySignal.WaitAsync(stoppingToken);
+
         logger.LogInformation(
-            "MessagePurgeService started — every {H}h, retention {D} days",
+            "MessagePurgeService démarré — toutes les {H}h, rétention {D} jours",
             _interval.TotalHours, _retentionDays);
 
-        // Purge initiale au démarrage (remplace l'appel dans TcpServerHostedService)
+        // Purge initiale au démarrage
         await RunPurgeAsync(stoppingToken);
 
         using var timer = new PeriodicTimer(_interval);
@@ -39,11 +43,11 @@ public class MessagePurgeService(
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error during message purge — will retry next tick");
+                logger.LogError(ex, "Erreur lors de la purge — nouvelle tentative au prochain tick");
             }
         }
 
-        logger.LogInformation("MessagePurgeService stopped.");
+        logger.LogInformation("MessagePurgeService arrêté.");
     }
 
     private async Task RunPurgeAsync(CancellationToken ct)
@@ -53,7 +57,7 @@ public class MessagePurgeService(
             await using var scope = scopeFactory.CreateAsyncScope();
             var chat = scope.ServiceProvider.GetRequiredService<IChatService>();
             await chat.PurgeOldMessagesAsync(_retentionDays);
-            logger.LogInformation("Message purge completed (retention: {D} days)", _retentionDays);
+            logger.LogInformation("Purge des messages terminée (rétention : {D} jours)", _retentionDays);
         }
         catch (OperationCanceledException)
         {
@@ -61,7 +65,7 @@ public class MessagePurgeService(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Message purge failed");
+            logger.LogError(ex, "Échec de la purge des messages");
         }
     }
 }

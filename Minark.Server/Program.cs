@@ -7,6 +7,7 @@ using Minark.Server.Networking.Handlers.Chat;
 using Minark.Server.Networking.Handlers.Profile;
 using Minark.Server.Services;
 using Minark.Server.Services.Interfaces;
+using Minark.Server.Startup;
 using Minark.Shared;
 using Serilog;
 
@@ -22,23 +23,26 @@ try
     var builder = Host.CreateApplicationBuilder(args);
 
     builder.Services.AddSingleton(sw);
-
     builder.Services.AddSerilog(Log.Logger);
     builder.Logging.ClearProviders();
 
     var connectionString = builder.Configuration.GetConnectionString("MariaDb")
                            ?? throw new InvalidOperationException("MariaDb connection string is missing.");
 
+    // ── Database ──────────────────────────────────────────────────────────────
     builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
             mysqlOptions => mysqlOptions.MigrationsAssembly("Minark.Server")));
 
-    // ── Memory caching ────────────────────────────────────────────────────
+    // ── Memory caching ────────────────────────────────────────────────────────
     builder.Services.AddMemoryCache();
     builder.Services.AddSingleton<ITokenCacheService, TokenCacheService>();
 
+    // ── Réseau WatsonTcp ──────────────────────────────────────────────────────
     builder.Services.AddSingleton<TcpServerFactory>();
     builder.Services.AddSingleton(sp => sp.GetRequiredService<TcpServerFactory>().Create());
+
+    // ── Services ──────────────────────────────────────────────────────────────
     builder.Services.AddSingleton<ISessionStore, SessionStore>();
     builder.Services.AddSingleton<IChallengeStore, ChallengeStore>();
     builder.Services.AddSingleton<ILoginRateLimiter, LoginRateLimiter>();
@@ -49,18 +53,12 @@ try
     builder.Services.AddScoped<INewsService, NewsService>();
     builder.Services.AddScoped<IChatService, ChatService>();
     builder.Services.AddScoped<IProfileService, ProfileService>();
-    // ── Packet routing ────────────────────────────────────────────────────
+
+    // ── Packet routing ────────────────────────────────────────────────────────
     builder.Services.AddSingleton<IServerSender, ServerSender>();
     builder.Services.AddSingleton<PacketRouter>();
 
-    // ── Auto-enregistrement des IPacketHandler via Scrutor ────────────────
-    // Tous les handlers du namespace Minark.Server.Networking.Handlers sont
-    // découverts automatiquement et enregistrés en Scoped (nécessaire pour accéder
-    // aux services scoped comme le DbContext).
-    //
-    // Exceptions : TypingHandler et BlockHandler prennent un paramètre primitif
-    // dans leur constructeur (PacketType, bool), donc Scrutor ne peut pas les
-    // instancier. Ils sont enregistrés manuellement plus bas.
+    // ── Auto-enregistrement des IPacketHandler via Scrutor ────────────────────
     builder.Services.Scan(scan => scan
         .FromAssemblyOf<IPacketHandler>()
         .AddClasses(classes => classes
@@ -87,9 +85,19 @@ try
             sp.GetRequiredService<IProfileService>(),
             sp.GetRequiredService<IServerSender>(), false));
 
-    builder.Services.AddHostedService<TcpServerHostedService>();
-    builder.Services.AddHostedService<MessagePurgeService>();
+    // ── Orchestrateur de démarrage ────────────────────────────────────────────
+    builder.Services.AddSingleton<ServerReadySignal>();
 
+    // Étapes enregistrées en tant que IStartupStep (ordre contrôlé par Step.Order)
+    builder.Services.AddSingleton<IStartupStep, DatabaseStartupStep>();
+    builder.Services.AddSingleton<IStartupStep, NetworkStartupStep>();
+    // ↑ Pour ajouter une étape future : implémenter IStartupStep et l'enregistrer ici.
+
+    // L'orchestrateur DOIT être le PREMIER hosted service
+    builder.Services.AddHostedService<ServerOrchestrator>();
+
+    // ── Services hébergés (démarrent après l'orchestrateur via ServerReadySignal) ──
+    builder.Services.AddHostedService<MessagePurgeService>();
 
     var app = builder.Build();
     await app.RunAsync();

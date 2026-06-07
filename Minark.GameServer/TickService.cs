@@ -1,35 +1,36 @@
 using LiteNetLib;
 using Minark.GameServer.Network;
 using Minark.GameServer.Services;
+using Minark.GameServer.Startup;
 
 namespace Minark.GameServer;
 
 /// <summary>
-///     Boucle de tick serveur.
-///     À chaque tick (configurable, défaut 20 Hz) :
-///     - Poll LiteNetLib (obligatoire)
-///     - Broadcast positions de tous les joueurs (Unreliable)
+///     Boucle de tick serveur — démarre uniquement après que
+///     <see cref="ServerOrchestrator" /> a signalé la disponibilité complète.
 /// </summary>
 public class TickService(
     NetManager netManager,
     PlayerRegistry registry,
     IServerSender sender,
     GameServerOptions opts,
+    ServerReadySignal readySignal,
     ILogger<TickService> log) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
+        // ── Attendre que DB + réseau soient prêts ─────────────────────────────
+        await readySignal.WaitAsync(ct);
+
         var intervalMs = 1000 / Math.Max(1, opts.TickRateHz);
-        log.LogInformation("Tick loop démarrée @ {Hz} Hz (interval={Ms}ms)", opts.TickRateHz, intervalMs);
+
+        log.LogInformation("Tick loop démarrée @ {Hz} Hz (interval={Ms} ms)", opts.TickRateHz, intervalMs);
 
         using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(intervalMs));
 
         while (await timer.WaitForNextTickAsync(ct))
         {
-            // ── Poll LiteNetLib (OBLIGATOIRE dans le thread principal) ────────
             netManager.PollEvents();
-
-            // ── Broadcast positions ───────────────────────────────────────────
             BroadcastPositions();
         }
     }
@@ -42,7 +43,6 @@ public class TickService(
             return;
         }
 
-        // Construire le snapshot global
         var snapshots = players.Select(p => new PlayerSnapshot
         {
             PlayerId = p.UserId,
@@ -55,7 +55,6 @@ public class TickService(
 
         var syncPacket = new PlayerMoveSyncPacket { Players = snapshots };
 
-        // Envoyer à chaque joueur connecté (Unreliable — perte acceptable)
         foreach (var player in players)
         {
             sender.Send(player.Peer, GamePacketType.PlayerMoveSync, syncPacket,

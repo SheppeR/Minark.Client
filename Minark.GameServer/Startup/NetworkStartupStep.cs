@@ -2,25 +2,32 @@ using LiteNetLib;
 using Minark.GameServer.Handlers;
 using Minark.GameServer.Network;
 using Minark.GameServer.Services;
+using Minark.GameServer.Utils;
 
-namespace Minark.GameServer;
+namespace Minark.GameServer.Startup;
 
 /// <summary>
-///     Hosted service qui démarre le listener LiteNetLib et gère les événements réseau.
+///     Étape 2 — Réseau LiteNetLib.
+///     Enregistre les événements et bind le port UDP.
+///     (Extrait de <c>LiteNetHostedService</c> pour contrôler l'ordre.)
 /// </summary>
-public class LiteNetHostedService(
+public class NetworkStartupStep(
     NetManager netManager,
     EventBasedNetListener listener,
     PacketDispatcher dispatcher,
     PlayerRegistry registry,
     IServerSender sender,
     GameServerOptions opts,
-    ILogger<LiteNetHostedService> log) : IHostedService
+    ILogger<NetworkStartupStep> log) : IStartupStep
 {
-    public Task StartAsync(CancellationToken ct)
-    {
-        // ── Événements LiteNetLib ─────────────────────────────────────────────
+    public string Name => "Network";
+    public int Order => StartupOrder.Network;
 
+    public Task ExecuteAsync(CancellationToken ct)
+    {
+        SerilogUtils.PrintSection("NETWORK");
+
+        // ── Événements LiteNetLib ─────────────────────────────────────────────
         listener.ConnectionRequestEvent += request =>
         {
             if (netManager.ConnectedPeersCount < opts.MaxPlayers)
@@ -33,7 +40,8 @@ public class LiteNetHostedService(
             }
         };
 
-        listener.PeerConnectedEvent += peer => { log.LogDebug("Peer connecté : {PeerId} ({Endpoint})", peer.Id, peer.Address); };
+        listener.PeerConnectedEvent += peer =>
+            log.LogDebug("Peer connecté : {PeerId} ({Endpoint})", peer.Id, peer.Address);
 
         listener.PeerDisconnectedEvent += (peer, info) =>
         {
@@ -45,7 +53,6 @@ public class LiteNetHostedService(
             log.LogInformation("Joueur déconnecté : {Username} (reason={Reason})",
                 player.Username, info.Reason);
 
-            // Notifier les amis en jeu
             var statusUpdate = new FriendStatusUpdate
             {
                 FriendId = player.UserId,
@@ -60,25 +67,19 @@ public class LiteNetHostedService(
         listener.NetworkReceiveEvent += async (peer, reader, channel, delivery) =>
         {
             var data = reader.GetRemainingBytes();
-            reader.Recycle(); // recycle manuel AVANT le await
+            reader.Recycle();
             await dispatcher.DispatchAsync(peer, data, 0, data.Length, CancellationToken.None);
         };
 
-        // ── Démarrage ─────────────────────────────────────────────────────────
+        // ── Bind ──────────────────────────────────────────────────────────────
         var started = netManager.Start(opts.Port);
         if (!started)
         {
-            throw new InvalidOperationException($"Impossible de démarrer LiteNetLib sur le port {opts.Port}");
+            throw new InvalidOperationException(
+                $"Impossible de démarrer LiteNetLib sur le port {opts.Port}.");
         }
 
-        log.LogInformation("GameServer LiteNetLib démarré sur 0.0.0.0:{Port}", opts.Port);
-        return Task.CompletedTask;
-    }
-
-    public Task StopAsync(CancellationToken ct)
-    {
-        log.LogInformation("Arrêt du GameServer...");
-        netManager.Stop();
+        log.LogInformation("LiteNetLib démarré sur 0.0.0.0:{Port}", opts.Port);
         return Task.CompletedTask;
     }
 }
