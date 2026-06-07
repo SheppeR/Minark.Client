@@ -40,14 +40,14 @@ public sealed class GameUpdaterService : IGameUpdaterService, IDisposable
         _logger = logger;
         _prefs = prefs;
 
-        var baseUrl = (config["Web:BaseUrl"] ?? "http://localhost:8080").TrimEnd('/');
+        var baseUrl = (config["Game:BaseUrl"] ?? "https://game.minark.fr").TrimEnd('/');
 
         _defaultInstallPath = config["Game:InstallPath"] ?? Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "Minark", "Game");
 
-        _manifestUrl = baseUrl + "/" + (config["Game:ManifestUrl"] ?? "game/game-manifest.json").TrimStart('/');
-        _downloadBase = baseUrl + "/" + (config["Game:DownloadBase"] ?? "game/").TrimStart('/');
+        _manifestUrl = baseUrl + "/" + (config["Game:ManifestUrl"] ?? "game-manifest.json").TrimStart('/');
+        _downloadBase = baseUrl + "/" + (config["Game:DownloadBase"] ?? "").TrimStart('/');
         if (!_downloadBase.EndsWith('/'))
         {
             _downloadBase += '/';

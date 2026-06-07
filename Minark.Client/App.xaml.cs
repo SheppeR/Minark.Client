@@ -1,7 +1,3 @@
-using System.Runtime.InteropServices;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
 using H.NotifyIcon;
 using iNKORE.UI.WPF.Modern;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +12,11 @@ using Minark.Client.Views.Windows;
 using Minark.Shared;
 using ReactiveUI.Builder;
 using Serilog;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Minark.Client;
 
@@ -251,19 +252,78 @@ public partial class App
 
     // ── Tray icon ─────────────────────────────────────────────────────────────
 
+    private static System.Drawing.Icon LoadTrayIcon()
+    {
+        var path = Path.Combine(AppContext.BaseDirectory, "minark.ico");
+        if (!File.Exists(path))
+            throw new FileNotFoundException($"minark.ico introuvable dans {AppContext.BaseDirectory}", path);
+        return new System.Drawing.Icon(path);
+    }
+
+    /// <summary>Crée une icône Segoe MDL2 Assets pour un MenuItem du tray.</summary>
+    private static TextBlock TrayMenuIcon(string glyph, Brush? foreground = null) => new()
+    {
+        Text = glyph,
+        FontFamily = new FontFamily("Segoe MDL2 Assets"),
+        FontSize = 14,
+        VerticalAlignment = VerticalAlignment.Center,
+        Foreground = foreground ?? new SolidColorBrush(Color.FromRgb(0x7C, 0x3A, 0xED))
+    };
+
     private TaskbarIcon CreateTrayIcon()
     {
-        var menu = new ContextMenu();
-        var menuOpen = new MenuItem { Header = "Ouvrir Minark", FontWeight = FontWeights.Bold };
+        var menuOpen = new MenuItem
+        {
+            Header = "Ouvrir Minark",
+            FontWeight = FontWeights.Bold,
+            Icon = TrayMenuIcon("\uE737"),   // Home
+            Visibility = Visibility.Collapsed
+        };
         menuOpen.Click += TrayMenu_ShowMain;
-        var menuFriends = new MenuItem { Header = "Amis" };
+
+        var menuFriends = new MenuItem
+        {
+            Header = "Amis",
+            Icon = TrayMenuIcon("\uE716"),   // People
+            Visibility = Visibility.Collapsed
+        };
         menuFriends.Click += TrayMenu_ShowFriends;
-        var menuQuit = new MenuItem { Header = "Quitter" };
+
+        var menuSep = new Separator { Visibility = Visibility.Collapsed };
+
+        var menuQuit = new MenuItem
+        {
+            Header = "Quitter",
+            Foreground = Brushes.IndianRed,
+            Icon = TrayMenuIcon("\uE7E8", Brushes.IndianRed)  // ChromeClose
+        };
         menuQuit.Click += TrayMenu_Quit;
 
+        // Afficher les items connectés dès le login, les masquer à la déconnexion
+        var auth = _host!.Services.GetRequiredService<IAuthClientService>();
+        void ShowLoggedIn() => Dispatcher.Invoke(() =>
+        {
+            menuOpen.Visibility = Visibility.Visible;
+            menuFriends.Visibility = Visibility.Visible;
+            menuSep.Visibility = Visibility.Visible;
+        });
+        void HideLoggedOut() => Dispatcher.Invoke(() =>
+        {
+            menuOpen.Visibility = Visibility.Collapsed;
+            menuFriends.Visibility = Visibility.Collapsed;
+            menuSep.Visibility = Visibility.Collapsed;
+        });
+
+        auth.LoggedIn += _ => ShowLoggedIn();
+        auth.SessionInvalidated += _ => HideLoggedOut();
+
+        // Si déjà connecté (reconnexion automatique), afficher immédiatement
+        if (auth.IsLoggedIn) ShowLoggedIn();
+
+        var menu = new ContextMenu();
         menu.Items.Add(menuOpen);
         menu.Items.Add(menuFriends);
-        menu.Items.Add(new Separator());
+        menu.Items.Add(menuSep);
         menu.Items.Add(menuQuit);
 
         var icon = new TaskbarIcon
@@ -271,14 +331,7 @@ public partial class App
             ToolTipText = "Minark",
             ContextMenu = menu,
             Id = Guid.NewGuid(),
-            IconSource = new GeneratedIconSource
-            {
-                Text = "P",
-                Foreground = Brushes.White,
-                FontSize = 28,
-                FontWeight = FontWeights.Bold,
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1"))
-            }
+            Icon = LoadTrayIcon()
         };
         icon.ForceCreate(false);
         icon.TrayMouseDoubleClick += (_, _) => TrayMenu_ShowMain(icon, new RoutedEventArgs());

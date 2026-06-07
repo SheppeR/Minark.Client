@@ -116,8 +116,17 @@ public class NewsArticleViewModel : ReactiveObject
     public string Author => Article.Author;
     public string Category => Article.Category;
     public DateTime PublishedAt => Article.PublishedAt;
-    public string? ImageUrl => Article.ImageUrl;
-    public bool HasHeroImage => !string.IsNullOrWhiteSpace(Article.ImageUrl);
+
+    /// <summary>
+    ///     URL de l'image principale. Si ImageUrl est null (article sans hero défini),
+    ///     on utilise le premier média carousel comme fallback — c'est le cas habituel
+    ///     quand les images sont uploadées via le carousel de l'admin.
+    /// </summary>
+    public string? ImageUrl => !string.IsNullOrWhiteSpace(Article.ImageUrl)
+        ? Article.ImageUrl
+        : CarouselImages.FirstOrDefault();
+
+    public bool HasHeroImage => !string.IsNullOrWhiteSpace(ImageUrl);
 
     // ── UI helpers pour le nouveau design ────────────────────────────────
     /// <summary>Index affiché en ghost dans la card (ex: "01", "02").</summary>
@@ -150,7 +159,11 @@ public class NewsArticleViewModel : ReactiveObject
     public int CarouselIndex
     {
         get;
-        set => this.RaiseAndSetIfChanged(ref field, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref field, value);
+            this.RaisePropertyChanged(nameof(CarouselPosition));
+        }
     }
 
     public int LikeCount
@@ -206,6 +219,12 @@ public class NewsArticleViewModel : ReactiveObject
     public string? CurrentCarouselImage => _currentCarouselImage.Value;
     public bool CanGoNext => _canGoNext.Value;
     public bool CanGoPrev => _canGoPrev.Value;
+
+    /// <summary>Ex: "2 / 3" — affiché dans le badge du carousel.</summary>
+    public string CarouselPosition => HasCarousel
+        ? $"{CarouselIndex + 1} / {CarouselImages.Count}"
+        : string.Empty;
+
     public IEnumerable<NewsCommentDto> TopComments => Comments.Take(3);
     public bool HasTopComments => Comments.Count > 0;
     public bool IsLiked => _isLiked.Value;

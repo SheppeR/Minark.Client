@@ -23,7 +23,7 @@
                     Margin="0,8,0,16"
                     ClipToBounds="True"
                     CornerRadius="0">
-                    <Image Source="{Binding Value, Converter={StaticResource UrlToImage}}" Stretch="UniformToFill" />
+                    <Image beh:AsyncImageBehavior.Source="{Binding Value}" Stretch="UniformToFill" />
                 </Border>
             </DataTemplate>
             <h:ContentBlockTemplateSelector
@@ -97,23 +97,92 @@
                     Text="{Binding Title}"
                     TextWrapping="Wrap" />
 
-                <!--  Hero image  -->
+                <!--  Carousel images  -->
                 <Border
-                    MaxHeight="380"
+                    MaxHeight="420"
                     Margin="0,0,0,28"
                     ClipToBounds="True"
                     CornerRadius="0"
-                    Visibility="{Binding HasHeroImage, Converter={StaticResource BoolToVis}}">
-                    <Border.Background>
-                        <ImageBrush ImageSource="{Binding ImageUrl, Converter={StaticResource UrlToImage}}"
-                                    Stretch="UniformToFill" />
-                    </Border.Background>
-                    <Border Height="380" />
+                    Visibility="{Binding HasCarousel, Converter={StaticResource BoolToVis}}">
+                    <Grid>
+
+                        <!--  Image courante  -->
+                        <Image
+                            MinHeight="280"
+                            beh:AsyncImageBehavior.Source="{Binding CurrentCarouselImage}"
+                            Stretch="UniformToFill" />
+
+                        <!--  Bouton précédent  -->
+                        <Button
+                            Width="36"
+                            Height="36"
+                            Margin="10,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Command="{Binding CarouselPrevCommand}"
+                            Style="{StaticResource IconBtn}"
+                            Visibility="{Binding CanGoPrev, Converter={StaticResource BoolToVis}}">
+                            <Border
+                                Width="36"
+                                Height="36"
+                                Background="#99000000"
+                                CornerRadius="18">
+                                <ui:FontIcon
+                                    FontSize="14"
+                                    Foreground="White"
+                                    Glyph="&#xE76B;" />
+                            </Border>
+                        </Button>
+
+                        <!--  Bouton suivant  -->
+                        <Button
+                            Width="36"
+                            Height="36"
+                            Margin="10,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Command="{Binding CarouselNextCommand}"
+                            Style="{StaticResource IconBtn}"
+                            Visibility="{Binding CanGoNext, Converter={StaticResource BoolToVis}}">
+                            <Border
+                                Width="36"
+                                Height="36"
+                                Background="#99000000"
+                                CornerRadius="18">
+                                <ui:FontIcon
+                                    FontSize="14"
+                                    Foreground="White"
+                                    Glyph="&#xE76C;" />
+                            </Border>
+                        </Button>
+
+                        <!--  Indicateur position  -->
+                        <Border
+                            Margin="0,0,0,10"
+                            Padding="8,3"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"
+                            Background="#99000000"
+                            CornerRadius="10">
+                            <TextBlock
+                                FontSize="11"
+                                Foreground="White"
+                                Text="{Binding CarouselPosition}" />
+                        </Border>
+
+                    </Grid>
                 </Border>
 
+                <!--  Hero image (fallback si pas de carousel)  -->
+                <Image
+                    MaxHeight="380"
+                    Margin="0,0,0,28"
+                    beh:AsyncImageBehavior.Source="{Binding ImageUrl}"
+                    Stretch="UniformToFill"
+                    Visibility="{Binding HasCarousel, Converter={StaticResource BoolToVisNot}}" />
+
                 <!--  Content blocks  -->
-                <ItemsControl ItemTemplateSelector="{StaticResource BlockSelector}"
-                              ItemsSource="{Binding ContentBlocks}" />
+                <ItemsControl ItemTemplateSelector="{StaticResource BlockSelector}" ItemsSource="{Binding ContentBlocks}" />
 
                 <!--  Reactions  -->
                 <Border
@@ -296,9 +365,7 @@
                                                 CornerRadius="0"
                                                 Visibility="{Binding AvatarUrl, Converter={StaticResource StringToVis}}">
                                                 <Border.Background>
-                                                    <ImageBrush
-                                                        ImageSource="{Binding AvatarUrl, Converter={StaticResource UrlToImage}}"
-                                                        Stretch="UniformToFill" />
+                                                    <ImageBrush ImageSource="{Binding AvatarUrl, Converter={StaticResource UrlToImage}}" Stretch="UniformToFill" />
                                                 </Border.Background>
                                             </Border>
                                         </Grid>
@@ -324,8 +391,7 @@
                                                     Text="{Binding PostedAt, StringFormat='{}{0:dd MMM yyyy à HH:mm}'}" />
                                             </StackPanel>
 
-                                            <ItemsControl
-                                                ItemsSource="{Binding Content, Converter={StaticResource ContentToBlocks}}">
+                                            <ItemsControl ItemsSource="{Binding Content, Converter={StaticResource ContentToBlocks}}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
                                                         <TextBlock

@@ -552,11 +552,10 @@
                                             </LinearGradientBrush>
                                         </Border.Background>
                                     </Border>
-                                    <Border Visibility="{Binding HasHeroImage, Converter={StaticResource BoolToVis}}">
-                                        <Border.Background>
-                                            <ImageBrush ImageSource="{Binding ImageUrl, Converter={StaticResource UrlToImage}}" Stretch="UniformToFill" />
-                                        </Border.Background>
-                                    </Border>
+                                    <Image
+                                        beh:AsyncImageBehavior.Source="{Binding ImageUrl}"
+                                        Stretch="UniformToFill"
+                                        Visibility="{Binding HasHeroImage, Converter={StaticResource BoolToVis}}" />
                                     <Border VerticalAlignment="Bottom">
                                         <Border.Background>
                                             <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">

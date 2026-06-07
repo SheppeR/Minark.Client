@@ -1,13 +1,13 @@
-using Minark.Client.Helpers;
-using Minark.Client.Services.Interfaces;
-using Minark.Client.ViewModels.Pages;
-using Minark.Shared.Packets;
-using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Windows.Input;
+using Minark.Client.Helpers;
+using Minark.Client.Services.Interfaces;
+using Minark.Client.ViewModels.Pages;
+using Minark.Shared.Packets;
+using ReactiveUI;
 
 namespace Minark.Client.ViewModels;
 

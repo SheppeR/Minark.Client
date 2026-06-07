@@ -3,45 +3,81 @@ using Minark.Server.Data;
 using Minark.Server.Data.Entities;
 using Minark.Server.Networking;
 using Minark.Server.Services.Interfaces;
+using Serilog;
 
 namespace Minark.Server.Services;
 
-public class NewsService(AppDbContext db, IClientBroadcaster broadcaster) : INewsService
+public class NewsService(AppDbContext db, IClientBroadcaster broadcaster, IConfiguration config) : INewsService
 {
     public async Task<NewsListResponse> GetNewsAsync(int page, int pageSize, int? userId = null)
     {
         var total = await db.News.CountAsync(n => n.IsPublished);
 
-        var news = await db.News
+        // Charger les données brutes depuis EF, puis résoudre les URLs en mémoire.
+        // EF Core ne peut pas appeler ResolveUrl() dans la projection SQL.
+        var raw = await db.News
             .Where(n => n.IsPublished)
             .OrderByDescending(n => n.PublishedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(n => new NewsDto
+            .Select(n => new
             {
-                Id = n.Id,
-                Title = n.Title,
-                Content = n.Content,
-                Author = n.Author,
-                Category = n.Category,
-                ImageUrl = n.ImageUrl,
-                PublishedAt = n.PublishedAt,
+                n.Id,
+                n.Title,
+                n.Content,
+                n.Author,
+                n.Category,
+                n.ImageUrl,
+                n.PublishedAt,
                 LikeCount = db.NewsReactions.Count(r => r.NewsId == n.Id && r.Reaction == 1),
                 DislikeCount = db.NewsReactions.Count(r => r.NewsId == n.Id && r.Reaction == 2),
                 CommentCount = db.NewsComments.Count(c => c.NewsId == n.Id),
                 UserReaction = userId == null
-                    ? ReactionType.None
-                    : (ReactionType)db.NewsReactions
+                    ? 0
+                    : db.NewsReactions
                         .Where(r => r.NewsId == n.Id && r.UserId == userId)
                         .Select(r => r.Reaction)
                         .FirstOrDefault(),
-                MediaUrls = db.NewsMedias
+                Media = db.NewsMedias
                     .Where(m => m.NewsId == n.Id)
                     .OrderBy(m => m.SortOrder)
-                    .Select(m => new NewsMediaDto { Url = m.Url, MediaType = m.MediaType })
+                    .Select(m => new { m.Url, m.MediaType })
                     .ToList()
             })
             .ToListAsync();
+
+        var news = raw.Select(n => new NewsDto
+        {
+            Id = n.Id,
+            Title = n.Title,
+            Content = n.Content,
+            Author = n.Author,
+            Category = n.Category,
+            ImageUrl = ResolveUrl(n.ImageUrl),
+            PublishedAt = n.PublishedAt,
+            LikeCount = n.LikeCount,
+            DislikeCount = n.DislikeCount,
+            CommentCount = n.CommentCount,
+            UserReaction = (ReactionType)n.UserReaction,
+            MediaUrls = n.Media
+                .Select(m => new NewsMediaDto
+                {
+                    Url = ResolveUrl(m.Url) ?? m.Url,
+                    MediaType = m.MediaType
+                })
+                .ToList()
+        }).ToList();
+
+        Log.Information("[NEWS] GetNewsAsync page={Page} size={Size} → {Count} articles retournés", page, pageSize, news.Count);
+        foreach (var n in news)
+        {
+            Log.Debug("[NEWS] Article id={Id} title={Title} ImageUrl={ImageUrl} MediaCount={MediaCount}",
+                n.Id, n.Title, n.ImageUrl ?? "null", n.MediaUrls.Count);
+            foreach (var m in n.MediaUrls)
+            {
+                Log.Debug("[NEWS]   Media url={Url} type={Type}", m.Url, m.MediaType);
+            }
+        }
 
         return new NewsListResponse { Success = true, News = news, TotalCount = total };
     }
@@ -218,9 +254,27 @@ public class NewsService(AppDbContext db, IClientBroadcaster broadcaster) : INew
         };
     }
 
+    private string? ResolveUrl(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            return null;
+        }
+
+        if (url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+            url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            return url;
+        }
+
+        var baseUrl = (config["Web:BaseUrl"] ?? string.Empty).TrimEnd('/');
+        var resolved = baseUrl + (url.StartsWith('/') ? url : "/" + url);
+        Log.Debug("[NEWS] ResolveUrl: {Raw} → {Resolved} (BaseUrl={Base})", url, resolved, baseUrl);
+        return resolved;
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    /// <summary>Single query: likes + dislikes + comment count in one round trip.</summary>
     private async Task<NewsStatsUpdated> GetStatsAsync(int newsId)
     {
         var stats = await db.News

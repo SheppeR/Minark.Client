@@ -124,8 +124,14 @@ public class NewsViewModel : ViewModelBase
             var nextPage = CurrentPage + 1;
             var response = await _news.GetNewsAsync(_auth.Token, nextPage);
 
+            Log.Information("[NEWS-VM] Réponse reçue: {Count} articles, TotalCount={Total}",
+                response.News.Count, response.TotalCount);
+
             foreach (var a in response.News)
             {
+                Log.Debug("[NEWS-VM] Article id={Id} ImageUrl={ImageUrl} MediaCount={MediaCount}",
+                    a.Id, a.ImageUrl ?? "null", a.MediaUrls.Count);
+
                 var vm = new NewsArticleViewModel(a, _auth, _news)
                 {
                     DisplayIndex = (Articles.Count + 1).ToString("D2")
